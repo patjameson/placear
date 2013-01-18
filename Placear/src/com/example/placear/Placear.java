@@ -7,8 +7,10 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.location.*;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -48,7 +50,14 @@ public class Placear extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
+		/*
+		 * testing of API system
+		 */
+		API api = new API();
+		LocationManager manager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		api.eventFinderForLocation().execute(manager.getLastKnownLocation(manager.getAllProviders().get(0)));
+		
 		setContentView(R.layout.activity_placear);
 
 		final View controlsView = findViewById(R.id.fullscreen_content_controls);
