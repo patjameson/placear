@@ -1,70 +1,97 @@
 package com.example.placear;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.net.http.AndroidHttpClient;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.location.*;
 
 public class API {
 	
-	AndroidHttpClient _facebookClient;
-	URI _facebookRoot;
+	private String _token;
+//	private AndroidHttpClient _facebookClient;
+	private AndroidHttpClient _googleClient;
+//	private URI _facebookRoot;
+	private URI _googleRoot; 
 	
-	public API(){
-		_facebookClient = AndroidHttpClient.newInstance("PlaceAR");
+	public API(String token){
+		_token = token;
+		_googleClient = AndroidHttpClient.newInstance("PlaceAR");
 		try {
-			_facebookRoot = new URI("http://graph.facebook.com/");
+			_googleRoot = new URI("https://maps.googleapis.com/maps/api/place/nearbysearch/json");
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
 	}
-
-	public AsyncTask<Location, Void, JSONArray> eventFinderForLocation(){
-		return new AsyncTask<Location, Void, JSONArray>(){
-			@Override
-			protected JSONArray doInBackground(Location... params) {
-				Location location = params[0];
-				String queryString = "search?type=event&distance=300&center=" +
-						location.getLatitude() + "," + location.getLongitude();
-				HttpGet request = new HttpGet(_facebookRoot.resolve(queryString));
-				HttpResponse response;
-				String responseBody = "";
-				JSONArray json = new JSONArray();
-				try {
-					response = _facebookClient.execute(request);
-					ByteArrayOutputStream out = new ByteArrayOutputStream();
-					response.getEntity().writeTo(out);
-					responseBody = out.toString();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				
-				Log.w("data", responseBody);
-				
-				try {
-					json = new JSONArray(responseBody);
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				
-				Log.w("tag", json.toString());
-				
-				return json;
+	
+	private ArrayList<Place> JSONToPlaces(JSONObject object) {
+		ArrayList<Place> places = new ArrayList<Place>();
+		try {
+			JSONArray results = (JSONArray) object.get("results");
+			for(int i=0; i<results.length(); i++){
+				JSONObject placeData = (JSONObject)results.get(i);
+				places.add(new Place(placeData));
 			}
-		};
-//		
-//		return null;
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return places;
+	}
+	
+	public class PlaceWorker extends Observable implements Runnable {
+		private Location _location;
+		public PlaceWorker(Location location) {
+			_location = location;
+		}
+		
+		@Override
+		public void run() {
+			String queryString = "?key=" + _token + "&location=" + _location.getLatitude() +
+					"," + _location.getLongitude() + "&radius=300&sensor=true";
+					
+			HttpGet request = new HttpGet(_googleRoot.resolve(queryString));
+			HttpResponse response;
+			String responseBody = "";
+			JSONObject json = null;
+			try {
+				response = _googleClient.execute(request);
+				InputStream stream = response.getEntity().getContent();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8);
+				StringBuilder builder = new StringBuilder();
+				String line = null;
+				while ((line = reader.readLine()) != null)
+				{
+				    builder.append(line + "\n");
+				}
+				responseBody = builder.toString();
+				json = new JSONObject(responseBody);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			setChanged();
+			notifyObservers(JSONToPlaces(json));
+		}
+	}
+	
+	public PlaceWorker placeWorkerForLocation(Observer observer, Location location){
+		return new PlaceWorker(location);
 	}
 }
