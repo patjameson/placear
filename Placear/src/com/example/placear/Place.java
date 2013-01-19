@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 
 import android.location.Location;
 import android.util.Log;
@@ -15,8 +14,9 @@ import android.util.Log;
  */
 
 public class Place {
-	private Double _latitude;
-	private Double _longitude;
+//	private Double _latitude;
+//	private Double _longitude;
+	private Location _location;
 	private String _address;
 	private String _name;
 	private ArrayList<String> _types;
@@ -25,8 +25,11 @@ public class Place {
 		try {
 			JSONObject geometry = data.getJSONObject("geometry");
 			JSONObject location = geometry.getJSONObject("location");
-			_latitude = location.getDouble("lat");
-			_longitude = location.getDouble("lng");
+//			_latitude = location.getDouble("lat");
+//			_longitude = location.getDouble("lng");
+			_location = new Location("");
+			_location.setLatitude(location.getDouble("lat"));
+			_location.setLongitude(location.getDouble("lng"));
 //			_address = data.getString("formatted_address");
 			_address = "address parsing not working";
 			_name = data.getString("name");
@@ -43,8 +46,9 @@ public class Place {
 			e.printStackTrace();
 		}
 	}
-	public Double getLatitude(){ return _latitude; }
-	public Double getLongitude(){ return _longitude; }
+	public Location getLocation(){ return _location; }
+//	public Double getLatitude(){ return _latitude; }
+//	public Double getLongitude(){ return _longitude; }
 	public String getAddress(){ return _address; }
 	public String getName(){ return _name; }
 	public ArrayList<String> getTypes(){ return _types; }

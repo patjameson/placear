@@ -54,13 +54,13 @@ public class Placear extends Activity implements Observer {
 		final View contentView = findViewById(R.id.fullscreen_content);
 		
 		/*
-		 * setup the shit
-		 */
+		 * debug the google places api
+		 *
 		API api = new API(getFBAccessToken());
 		LocationManager manager = (LocationManager) getSystemService(LOCATION_SERVICE);
-		//api.eventFinderForLocation().execute();
 		PlaceWorker r = api.placeWorkerForLocation(this, manager.getLastKnownLocation(manager.getAllProviders().get(0)));
 		new Thread(r).start();
+		*/
 		
 		// Set up an instance of SystemUiHider to control the system UI for
 		// this activity.
