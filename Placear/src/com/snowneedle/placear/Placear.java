@@ -39,25 +39,33 @@ public class Placear extends Activity {
 		sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
 		
 		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-		PLM = new PlacearLocationManager(lm, sensorManager, getGoogleAccessToken());
+		PLM = new PlacearLocationManager(lm, sensorManager, getGoogleAccessToken(), "");
 		
 		setContentView(R.layout.activity_placear);
 		PlacearCamera preview = new PlacearCamera(this);
 		FrameLayout f = ((FrameLayout) findViewById(R.id.preview));
 		f.addView(preview);
 		
-		// adding in opengl overlay
-		Renderer renderer = new AROverlay(this);
-		GLSurfaceView surfaceView = new GLSurfaceView(this);
-		surfaceView.setZOrderMediaOverlay(true);
-		surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
-		surfaceView.setRenderer(renderer);
-		surfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
-		f.addView(surfaceView);
+//		// adding in opengl overlay
+//		Renderer renderer = new AROverlay(this);
+//		GLSurfaceView surfaceView = new GLSurfaceView(this);
+//		surfaceView.setZOrderMediaOverlay(true);
+//		surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+//		surfaceView.setRenderer(renderer);
+//		surfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
+//		f.addView(surfaceView);
 		
 		// set up a call
-		Caller caller = new Caller(this);
-		caller.placeCall("973-985-6199");
+//		Caller caller = new Caller(this);
+//		caller.placeCall("973-985-6199");
+		Log.v("P", "Starting app.");
+		System.out.println("Test");
+//		
+//		sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
+//		
+//		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
+//		PlacearLocationManager PLM = new PlacearLocationManager(lm, sensorManager,
+//				getGoogleAccessToken(), getFacebookAccessToken());
 	}
 	
 	public PlacearLocationManager getLocationManager(){ return PLM; }
@@ -68,6 +76,22 @@ public class Placear extends Activity {
 		InputStream in;
 		try {
 			in = getAssets().open("google_token");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+			token = reader.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		Log.w("access token", token);
+		
+		return token;
+	}
+	
+	private String getFacebookAccessToken() {
+		String token = "";
+		InputStream in;
+		try {
+			in = getAssets().open("facebook_token");
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			token = reader.readLine();
 		} catch (IOException e) {

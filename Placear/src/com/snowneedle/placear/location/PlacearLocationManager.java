@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-import com.snowneedle.placear.Place;
-
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.util.Log;
+
+import com.snowneedle.placear.Place;
 
 public class PlacearLocationManager implements Observer{
 	
@@ -24,10 +25,11 @@ public class PlacearLocationManager implements Observer{
 	private Sensor sensor;
 	private PlacearSensorEventListener sensorListener;
 	
-	public PlacearLocationManager(LocationManager locationManager, SensorManager sensorManager, String googleAccessToken) {
-		
+	public PlacearLocationManager(LocationManager locationManager, SensorManager sensorManager,
+			String googleAccessToken, String facebookAccessToken) {
+		Log.v("PLM", "Starting.");
 		locationListener = new PlacearLocationListener(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER),
-				sensorListener, googleAccessToken);		
+				sensorListener, googleAccessToken, facebookAccessToken);		
 		this.locationManager = locationManager;
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
 				updateMs, updateDist, locationListener);

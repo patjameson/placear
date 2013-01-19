@@ -1,20 +1,19 @@
 package com.snowneedle.placear.location;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Random;
 
-import com.snowneedle.placear.API;
-import com.snowneedle.placear.API.PlaceWorker;
-import com.snowneedle.placear.Place;
-
-import android.hardware.GeomagneticField;
 import android.hardware.SensorEventListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.snowneedle.placear.API;
+import com.snowneedle.placear.API.PlaceWorker;
+import com.snowneedle.placear.Place;
 
 public class PlacearLocationListener implements LocationListener, Observer {
 		
@@ -25,14 +24,15 @@ public class PlacearLocationListener implements LocationListener, Observer {
 		private API api;
 		ArrayList<Location> locations = new ArrayList<Location>();
 		
-		public PlacearLocationListener(Location lastKnown, SensorEventListener sensorListener, String googleAccessToken) {
+		public PlacearLocationListener(Location lastKnown, SensorEventListener sensorListener,
+				String googleAccessToken, String facebookAccessToken) {
 			this.lastKnownLocation = lastKnown; 
 			places = new ArrayList<Place>();
 			
-//			api = new API(googleAccessToken);
-//			PlaceWorker worker = api.placeWorkerForLocation(this, lastKnownLocation);
-//			new Thread(worker).start();
-//			worker.addObserver(this);
+			api = new API(googleAccessToken, facebookAccessToken);
+			PlaceWorker worker = api.placeWorkerForLocation(this, lastKnownLocation);
+			new Thread(worker).start();
+			worker.addObserver(this);
 			
 			new Thread(new Runnable() {
 				public void run() {
@@ -83,7 +83,13 @@ public class PlacearLocationListener implements LocationListener, Observer {
 		
 		@Override
 		public void update(Observable observable, Object data) {
-			places = (ArrayList<Place>)data;
+			if(data instanceof ArrayList) {
+				places = (ArrayList<Place>)data;
+			} else if(data instanceof HashMap) {
+				
+			} else {
+				Log.e("API", "What the fuck?!");
+			}
 		}
 		
 
@@ -124,7 +130,7 @@ public class PlacearLocationListener implements LocationListener, Observer {
 		}
 		
 		public Location getClosestLocation() {
-			System.out.println(locations.size());
+			//System.out.println(locations.size());
 			
 			if(locations.size() == 0) return null;
 			Location closestLocation = null;
@@ -134,7 +140,7 @@ public class PlacearLocationListener implements LocationListener, Observer {
 			
 			for(Location p: locations) {
 				float bearing = lastKnownLocation.bearingTo(p);
-				System.out.println("Bearing: " + bearing);
+				//System.out.println("Bearing: " + bearing);
 //				p.getLocation().getLatitude();
 //				Location l = p.getLocation();
 			}

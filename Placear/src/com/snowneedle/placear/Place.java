@@ -7,19 +7,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.location.Location;
-import android.util.Log;
+import android.os.AsyncTask;
 
 /*
  * This file is the essence of java
  */
 
 public class Place {
-//	private Double _latitude;
-//	private Double _longitude;
+
 	private Location _location;
 	private String _address;
 	private String _name;
 	private ArrayList<String> _types;
+	private boolean openNow;
+	private double rating;
+	private int priceLevel;
+	private String reference;
+	private PlaceDetail detail = null;
 	
 	public Place(){
 		_location = new Location("");
@@ -34,13 +38,15 @@ public class Place {
 	public Place(JSONObject data){
 		try {
 			JSONObject geometry = data.getJSONObject("geometry");
+			JSONObject openingHours = data.getJSONObject("opening_hours");
+			openNow = openingHours.getBoolean("open_now");
+			rating = data.getDouble("rating");
+			priceLevel = data.getInt("price_level");
 			JSONObject location = geometry.getJSONObject("location");
-//			_latitude = location.getDouble("lat");
-//			_longitude = location.getDouble("lng");
+			reference = data.getString("reference");
 			_location = new Location("");
 			_location.setLatitude(location.getDouble("lat"));
 			_location.setLongitude(location.getDouble("lng"));
-//			_address = data.getString("formatted_address");
 			_address = "address parsing not working";
 			_name = data.getString("name");
 			JSONArray typesData = data.getJSONArray("types");
@@ -54,10 +60,19 @@ public class Place {
 			e.printStackTrace();
 		}
 	}
+	
+	public void getDetail(){
+		
+	}
+	
 	public Location getLocation(){ return _location; }
-//	public Double getLatitude(){ return _latitude; }
-//	public Double getLongitude(){ return _longitude; }
 	public String getAddress(){ return _address; }
 	public String getName(){ return _name; }
 	public ArrayList<String> getTypes(){ return _types; }
+	public boolean isOpenNow() { return openNow; }
+	public double getRating() { return rating; }
+	public int getPriceLevel() { return priceLevel; }
+	public String getReference() { return reference; }
+	public void setDetail(PlaceDetail d) { detail = d; }
+	
 }
