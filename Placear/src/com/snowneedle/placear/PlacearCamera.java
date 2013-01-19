@@ -29,7 +29,8 @@ class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback {
 		try {
 			camera.setPreviewDisplay(holder);
 		} catch (IOException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
+			System.out.println("Hi");
 		}
 	}
 

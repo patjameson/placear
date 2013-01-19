@@ -1,7 +1,6 @@
 package com.snowneedle.placear;
 
 import com.snowneedle.placear.R;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.FrameLayout;
