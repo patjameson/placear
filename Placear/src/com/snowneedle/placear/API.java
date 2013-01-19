@@ -25,15 +25,19 @@ import android.util.Log;
 public class API {
 	
 	private String _googleToken;
-//	private AndroidHttpClient _facebookClient;
+	private String _facebookToken;
+	
+	private AndroidHttpClient _facebookClient;
 	private AndroidHttpClient _googleClient;
-//	private URI _facebookRoot;
 	
 	private final String _googleRoot = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
+	private final String _facebookGraphRoot = "https://graph.facebook.com/app";
 	
-	public API(String googleToken){
+	public API(String googleToken, String facebookToken){
 		_googleToken = googleToken;
+		_facebookToken = facebookToken;
 		_googleClient = AndroidHttpClient.newInstance("PlaceAR");
+		_facebookClient = AndroidHttpClient.newInstance("PlaceAR");
 	}
 	
 	private URI createQueryString(String baseUrl, HashMap<String, String> params) {
@@ -168,6 +172,33 @@ public class API {
 		Object processJSON(JSONObject j) {
 			return JSONToPlaces(j);
 		}
+	}
+	
+	public class FBEventWorker extends APIWorker {
+
+		@Override
+		AndroidHttpClient getClient() {
+			return _facebookClient;
+		}
+
+		@Override
+		URI getQuery() {
+			return createQueryString(_facebookGraphRoot, new HashMap<String, String>(){{
+				put("access_token", _facebookToken);
+			}});
+		}
+
+		@Override
+		JSONObject processResponse(HttpResponse r) {
+			return createJSONFromResponse(r);
+		}
+		
+		@Override
+		Object processJSON(JSONObject j) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
 	}
 	
 	public PlaceWorker placeWorkerForLocation(Observer observer, Location location){

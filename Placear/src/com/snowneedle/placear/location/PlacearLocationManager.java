@@ -24,10 +24,11 @@ public class PlacearLocationManager implements Observer{
 	private Sensor sensor;
 	private PlacearSensorEventListener sensorListener;
 	
-	public PlacearLocationManager(LocationManager locationManager, SensorManager sensorManager, String googleAccessToken) {
+	public PlacearLocationManager(LocationManager locationManager, SensorManager sensorManager,
+			String googleAccessToken, String facebookAccessToken) {
 		Log.v("PLM", "Starting.");
 		locationListener = new PlacearLocationListener(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER),
-				sensorListener, googleAccessToken);		
+				sensorListener, googleAccessToken, facebookAccessToken);		
 		this.locationManager = locationManager;
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
 				updateMs, updateDist, locationListener);

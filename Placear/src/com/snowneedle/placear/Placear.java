@@ -47,7 +47,8 @@ public class Placear extends Activity {
 		sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
 		
 		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-		PlacearLocationManager PLM = new PlacearLocationManager(lm, sensorManager, getGoogleAccessToken());
+		PlacearLocationManager PLM = new PlacearLocationManager(lm, sensorManager,
+				getGoogleAccessToken(), getFacebookAccessToken());
 	}
 	
 	private String getGoogleAccessToken() {
@@ -55,6 +56,22 @@ public class Placear extends Activity {
 		InputStream in;
 		try {
 			in = getAssets().open("google_token");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+			token = reader.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		Log.w("access token", token);
+		
+		return token;
+	}
+	
+	private String getFacebookAccessToken() {
+		String token = "";
+		InputStream in;
+		try {
+			in = getAssets().open("facebook_token");
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			token = reader.readLine();
 		} catch (IOException e) {
