@@ -1,5 +1,9 @@
 package com.snowneedle.placear;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -22,15 +26,9 @@ import android.util.Log;
 
 import android.widget.FrameLayout;
 
-public class Placear extends Activity implements SensorEventListener, Observer {
+public class Placear extends Activity implements SensorEventListener {
 	SensorManager sensorManager;
 	Sensor compass;
-	
-	@Override
-	public void update(Observable observable, Object data) {
-		ArrayList<Place> places = (ArrayList<Place>)data;
-		Log.w("debug", places.toString());
-	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,16 +40,32 @@ public class Placear extends Activity implements SensorEventListener, Observer {
 		f.addView(preview);
 		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 		compass = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-	//		Log.v("Placear", "Creating PLM.");
-	//		SensorManager sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
-	//		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-	//		PlacearLocationManager PLM = new PlacearLocationManager(lm, sensorManager);
+		
+		SensorManager sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
+		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
+		PlacearLocationManager PLM = new PlacearLocationManager(lm, sensorManager, getGoogleAccessToken());
 		
 		//Log.v("Placear", "Created PLM.");
 		
 //		mGLView = new Test3d(this);
 //        setContentView(mGLView);
 		
+	}
+	
+	private String getGoogleAccessToken(){
+		String token = "";
+		InputStream in;
+		try {
+			in = getAssets().open("google_token");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+			token = reader.readLine();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		Log.w("access token", token);
+		
+		return token;
 	}
 	
 	@Override
@@ -71,6 +85,5 @@ public class Placear extends Activity implements SensorEventListener, Observer {
 		double myAzimuth = Math.round(event.values[0]);
         double myPitch = Math.round(event.values[1]);
         double myRoll = Math.round(event.values[2]);
-        System.out.println(myAzimuth + " " + myPitch + " " + myRoll);
 	}
 }

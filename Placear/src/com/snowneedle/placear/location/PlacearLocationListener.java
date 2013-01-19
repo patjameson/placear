@@ -1,7 +1,13 @@
 package com.snowneedle.placear.location;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Random;
+
+import com.snowneedle.placear.API;
+import com.snowneedle.placear.API.PlaceWorker;
+import com.snowneedle.placear.Place;
 
 import android.hardware.GeomagneticField;
 import android.hardware.SensorEventListener;
@@ -10,50 +16,63 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
 
-public class PlacearLocationListener implements LocationListener {
+public class PlacearLocationListener implements LocationListener, Observer {
 		
 		private final static String TAG = "Placear";
 		private Location lastKnownLocation;
-		private ArrayList<Location> locations;
+		private ArrayList<Place> places;
 		private PlacearSensorEventListener sensorListener;
+		private API api;
 		
-		public PlacearLocationListener(Location lastKnown, SensorEventListener sensorListener) {
+		public PlacearLocationListener(Location lastKnown, SensorEventListener sensorListener, String googleAccessToken) {
 			this.lastKnownLocation = lastKnown; 
-			locations = new ArrayList<Location>();
+			places = new ArrayList<Place>();
 			
-			Location l = new Location("");
-			l.setLatitude(39.956465);
-			l.setLongitude(-75.20442);
-			locations.add(l);
-			l = new Location("");
-			l.setLatitude(39.954622);
-			l.setLongitude(-75.19721);
-			locations.add(l);
-			l = new Location("");
-			l.setLatitude(39.961596);
-			l.setLongitude(-75.192833);
-			locations.add(l);
-			l = new Location("");
-			l.setLatitude(39.949622);
-			l.setLongitude(-75.17601);
-			locations.add(l);
-			l = new Location("");
-			l.setLatitude(39.941791);
-			l.setLongitude(-75.184851);
-			locations.add(l);
-			l = new Location("");
-			l.setLatitude(39.939817);
-			l.setLongitude(-75.200901);
-			locations.add(l);
-			l = new Location("");
-			l.setLatitude(39.952525);
-			l.setLongitude(-75.190065);
-			locations.add(l);
-			for(Location l1: locations) {
-				Log.v(TAG, l1.toString());
-			}
+			api = new API(googleAccessToken);
+			PlaceWorker worker = api.placeWorkerForLocation(this, lastKnownLocation);
+			new Thread(worker).start();
+			worker.addObserver(this);
+			
+//			Location l = new Location("");
+//			l.setLatitude(39.956465);
+//			l.setLongitude(-75.20442);
+//			locations.add(l);
+//			l = new Location("");
+//			l.setLatitude(39.954622);
+//			l.setLongitude(-75.19721);
+//			locations.add(l);
+//			l = new Location("");
+//			l.setLatitude(39.961596);
+//			l.setLongitude(-75.192833);
+//			locations.add(l);
+//			l = new Location("");
+//			l.setLatitude(39.949622);
+//			l.setLongitude(-75.17601);
+//			locations.add(l);
+//			l = new Location("");
+//			l.setLatitude(39.941791);
+//			l.setLongitude(-75.184851);
+//			locations.add(l);
+//			l = new Location("");
+//			l.setLatitude(39.939817);
+//			l.setLongitude(-75.200901);
+//			locations.add(l);
+//			l = new Location("");
+//			l.setLatitude(39.952525);
+//			l.setLongitude(-75.190065);
+//			locations.add(l);
+//			for(Location l1: locations) {
+//				Log.v(TAG, l1.toString());
+//			}
 			this.sensorListener = (PlacearSensorEventListener) sensorListener;
 		}
+		
+		@Override
+		public void update(Observable observable, Object data) {
+			places = (ArrayList<Place>)data;
+			Log.w("got place data", places.toString());
+		}
+		
 
 		@Override
 		public void onLocationChanged(Location arg0) {
@@ -91,30 +110,17 @@ public class PlacearLocationListener implements LocationListener {
 			return lastKnownLocation.getLatitude();
 		}
 		
-		public double getDeclination() {
-			GeomagneticField gf = new GeomagneticField(Double.valueOf(lastKnownLocation.getLatitude()).floatValue(),
-					Double.valueOf(lastKnownLocation.getLongitude()).floatValue(),
-					Double.valueOf(lastKnownLocation.getAltitude()).floatValue(),
-					System.currentTimeMillis());
-			return gf.getDeclination();
-		}
-		
 		public Location getClosestLocation() {
-			if(locations.size() == 0) return null;
+			if(places.size() == 0) return null;
 			Location closestLocation = null;
-			float bearing = lastKnownLocation.bearingTo(locations.get(0));
-			float minDirection = (float) ((sensorListener.getAzimuth() + getDeclination()) - bearing);
-			float d = 0;
-			int i = 0;
-			for(Location l: locations) {
-				bearing = lastKnownLocation.bearingTo(l);
-				d = (float) ((sensorListener.getAzimuth() + getDeclination()) - bearing);
-				Log.v("I", "" + i + " " + d);
-				if(d < minDirection) {
-					closestLocation = l;
-					minDirection = d;
-				}
-				i++;
+			
+			ArrayList<Place> chosenPlaces = new ArrayList<Place>();
+			
+			for(Place p: places) {
+				float bearing = lastKnownLocation.bearingTo(p.getLocation());
+				p.getLocation().getLatitude();
+				Location l = p.getLocation();
+				
 			}
 			return closestLocation;
 		}

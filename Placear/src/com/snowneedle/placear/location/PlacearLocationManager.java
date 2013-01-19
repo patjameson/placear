@@ -29,20 +29,19 @@ public class PlacearLocationManager implements Observer{
 	private Sensor sensor;
 	private PlacearSensorEventListener sensorListener;
 	
-	public PlacearLocationManager(LocationManager locationManager, SensorManager sensorManager) {
-		Log.v("Placear", "Creating PSEL.");
+	public PlacearLocationManager(LocationManager locationManager, SensorManager sensorManager, String googleAccessToken) {
+		
 		this.sensorListener = new PlacearSensorEventListener();
 		this.sensorManager = sensorManager;
 		this.sensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 		this.sensorManager.registerListener(sensorListener, this.sensor, SensorManager.SENSOR_DELAY_FASTEST);	
 		
 		locationListener = new PlacearLocationListener(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER),
-				sensorListener);		
+				sensorListener, googleAccessToken);		
 		this.locationManager = locationManager;
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
 				updateMs, updateDist, locationListener);
-		Log.v("MYLOC", getLastKnownLocation().toString());
-		Log.v("TEST", locationListener.getClosestLocation().toString());
+		
 
 	}
 	
