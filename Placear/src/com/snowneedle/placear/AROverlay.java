@@ -40,6 +40,7 @@ public class AROverlay implements GLSurfaceView.Renderer, SensorEventListener {
 		_sensorManager.registerListener(this, _compass, SensorManager.SENSOR_DELAY_NORMAL);
 //		_azimuth = 0;
 		_orientation = new float[3];
+		setupLocations();
 	}
 	
 	public void setupLocations(){
@@ -51,22 +52,61 @@ public class AROverlay implements GLSurfaceView.Renderer, SensorEventListener {
 	
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		setupLocations();
-		
 		gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
 //		gl.glMatrixMode(GL10.GL_MODELVIEW);
 //		gl.glLoadIdentity();
 		
-//		gl.glColor4f(0f, 1f, 0f, 1f);
-//		gl.glPointSize(10.0f);
-//		
-//		gl.glMatrixMode(GL10.GL_PROJECTION);
-//		gl.glLoadIdentity();
+		gl.glColor4f(0f, 1f, 0f, 1f);
+		gl.glPointSize(10.0f);
 		
-		Log.w("orientation", "x: " + _orientation[0] + ",\ty: " + _orientation[1] + ",\tz: " + _orientation[2]);
+		gl.glMatrixMode(GL10.GL_PROJECTION);
+		gl.glLoadIdentity();
+		
+//		Log.w("orientation", "x: " + _orientation[0] + ",\ty: " + _orientation[1] + ",\tz: " + _orientation[2]);
 		Location placeLocation = _places.get(0).getLocation();
-		_currentLocation.bearingTo(placeLocation);
+		
+		Double bearing = _currentLocation.bearingTo(placeLocation) * Math.PI / 180;
+		Double zr = 2 * Math.asin(_orientation[2]);
+		
+		double theta = bearing - zr;
+		
+//		Log.w("stuff", "bearing: " + bearing + ", \tzr: " + zr);
+		Log.w("dtheta", "thing: " + theta);
+		
+		Double size = 2d;
+		float pointX = (float)(Math.cos(theta)*size);
+		float pointZ = (float)(Math.sin(theta)*size);
+		
+		float p = 0.2f;
+		float points[] = {
+			-p, -p, 0,
+			-p, p, 0,
+			p, p, 0,
+			p, -p, 0
+		};
+		
+		FloatBuffer vertexBuffer;
+		ByteBuffer bb = ByteBuffer.allocateDirect(points.length*4);
+		bb.order(ByteOrder.nativeOrder());
+		vertexBuffer = bb.asFloatBuffer();
+		vertexBuffer.put(points);
+		vertexBuffer.position(0);
+		
+		gl.glVertexPointer(3, GL10.GL_FLOAT, 0, vertexBuffer);
+		
+		gl.glPushMatrix();
+		
+//		gl.glMatrixMode(GL10.GL_MODELVIEW);
+		
+		gl.glTranslatef(0f, 0f, 1f);
+		gl.glRotatef(-_orientation[0], 1f, 0f, 0f);
+		gl.glRotatef(-_orientation[1], 0f, 1f, 0f);
+		gl.glRotatef(-_orientation[2], 0f, 0f, 1f);
+		
+		gl.glDrawArrays(GL10.GL_TRIANGLE_FAN, 0, points.length/3);
+		
+		gl.glPopMatrix();
 		
 //		Float height = 0.0001f;;
 //		
@@ -93,18 +133,7 @@ public class AROverlay implements GLSurfaceView.Renderer, SensorEventListener {
 //		
 //		float h = 0.5f;
 //		
-//		float points[] = {
-//			minX, -h, minZ,
-//			minX,  h, minZ,
-//			maxX,  h, maxZ
-//		};
-//		
-//		FloatBuffer vertexBuffer;
-//		ByteBuffer bb = ByteBuffer.allocateDirect(points.length*4);
-//		bb.order(ByteOrder.nativeOrder());
-//		vertexBuffer = bb.asFloatBuffer();
-//		vertexBuffer.put(points);
-//		vertexBuffer.position(0);
+
 //		
 //		gl.glPushMatrix();
 ////		gl.glRotatef(_azimuth, 0, 1f, 0);
