@@ -61,7 +61,7 @@ class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceCreated(SurfaceHolder holder) {
 		// The Surface has been created, acquire the camera and tell it where
 		// to draw.
-		camera = Camera.open();
+		camera = Camera.open(0);
 		try {
 			camera.setPreviewDisplay(holder);
 		} catch (IOException e) {
