@@ -1,6 +1,6 @@
 package com.snowneedle.placear;
 
-import com.example.placear.R;
+import com.snowneedle.placear.R;
 import com.snowneedle.placear.util.SystemUiHider;
 
 import android.annotation.TargetApi;
