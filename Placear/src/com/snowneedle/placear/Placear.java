@@ -15,6 +15,7 @@ import com.snowneedle.placear.location.PlacearLocationManager;
 
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -28,21 +29,24 @@ import android.widget.FrameLayout;
 
 public class Placear extends Activity {
 	SensorManager sensorManager;
+	PlacearCamera preview;
+	PlacearLocationManager PLM;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_placear);
-		PlacearCamera preview = new PlacearCamera(this);
-		FrameLayout f = ((FrameLayout) findViewById(R.id.preview));
-		f.addView(preview);
 		
 		
 		sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
 		
 		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-		PlacearLocationManager PLM = new PlacearLocationManager(lm, sensorManager, getGoogleAccessToken());
+		PLM = new PlacearLocationManager(lm, sensorManager, getGoogleAccessToken(), this);
+		
+		preview = new PlacearCamera(this, PLM.locationListener);
+		FrameLayout f = ((FrameLayout) findViewById(R.id.preview));
+		f.addView(preview);
 	}
 	
 	private String getGoogleAccessToken() {

@@ -29,6 +29,7 @@ public class API {
 	private AndroidHttpClient _googleClient;
 //	private URI _facebookRoot;
 	private URI _googleRoot; 
+	private JSONObject _locationsCache;
 	
 	public API(String token){
 		_token = token;
@@ -62,37 +63,47 @@ public class API {
 		
 		@Override
 		public void run() {
-			System.out.println("fjdsklfdsjafsd");
 			String queryString = "json?key=" + _token + "&location=" + _location.getLatitude() +
 					"," + _location.getLongitude() + "&radius=300&sensor=true";
-					
+			
+			
 			HttpGet request = new HttpGet(_googleRoot.resolve(queryString));
 			HttpResponse response;
 			String responseBody = "";
 			JSONObject json = null;
 			while(true) {
 				try {
-					response = _googleClient.execute(request);
-					InputStream stream = response.getEntity().getContent();
-					BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8);
-					StringBuilder builder = new StringBuilder();
-					String line = null;
-					while ((line = reader.readLine()) != null)
-					{
-					    builder.append(line + "\n");
-					}
-					responseBody = builder.toString();
-					System.out.println(responseBody);
-					json = new JSONObject(responseBody);
-				} catch (JSONException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
+					Thread.currentThread().sleep(10000);
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				if (_locationsCache == null) {
+					System.out.println("CALLING GOOGLE");
+					try {
+						response = _googleClient.execute(request);
+						System.out.println(_googleRoot.resolve(queryString));
+						InputStream stream = response.getEntity().getContent();
+						BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8);
+						StringBuilder builder = new StringBuilder();
+						String line = null;
+						while ((line = reader.readLine()) != null)
+						{
+						    builder.append(line + "\n");
+						}
+						responseBody = builder.toString();
+						System.out.println(responseBody);
+						json = new JSONObject(responseBody);
+						_locationsCache = json;
+					} catch (JSONException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 				setChanged();
-				notifyObservers(JSONToPlaces(json));
+				notifyObservers(JSONToPlaces(_locationsCache));
 				try {
-					Thread.currentThread().sleep(5000);
+					Thread.currentThread().sleep(50000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

@@ -1,6 +1,14 @@
 package com.snowneedle.placear;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+
+import com.snowneedle.placear.API.PlaceWorker;
+import com.snowneedle.placear.location.PlacearLocationListener;
+import com.snowneedle.placear.location.PlacearLocationListener.Refresh;
+import com.snowneedle.placear.location.PlacearLocationManager;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,26 +16,39 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.hardware.Camera;
+import android.location.Location;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback {
+public class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback, Observer {
 	SurfaceHolder mHolder;
 	public Camera camera;
 	Paint paint = new Paint();
+	PlacearLocationListener ll;
+	String text = "Nothing directly ahead...fd";
 
-	PlacearCamera(Context context) {
+	PlacearCamera(Placear context, PlacearLocationListener cam) {
 		super(context);
 		this.setWillNotDraw(false);
+		
+		ll = cam;
+		
+//		Refresh worker = cam.refreshForLocation(this);
+//		new Thread(worker).start();
+//		worker.addObserver(this);
 
 		mHolder = getHolder();
 		mHolder.addCallback(this);
 		mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 	}
 	
+	@Override
+	public void update(Observable observable, Object data) {
+		//this.invalidate();
+	}
+	
 	@Override 
     public void onDraw(Canvas canvas) {
-		System.out.println("fdkjlfsa");
 		paint.setColor(Color.RED);
 		paint.setStrokeWidth(3);
 		paint.setTextSize(40);
@@ -54,7 +75,17 @@ class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback {
 //	    imageMatrix.setPolyToPoly(srcPoints, 0, destPoints, 0, 4);
 //	    canvas.setMatrix(imageMatrix);
 //	    canvas.rotate(10);
-//		canvas.drawText("Test Text Here", 100, 200, paint);
+		if (ll != null) {
+			Place loc = ll.getClosestLocation();
+			if (loc != null)
+				canvas.drawText(loc.getName(), 300, 200, paint);
+		}
+		try {
+			Thread.currentThread().sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		this.invalidate();
     }
 	
 
