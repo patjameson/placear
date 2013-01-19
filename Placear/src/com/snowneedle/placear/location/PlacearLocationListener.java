@@ -29,10 +29,10 @@ public class PlacearLocationListener implements LocationListener, Observer {
 			this.lastKnownLocation = lastKnown; 
 			places = new ArrayList<Place>();
 			
-//			api = new API(googleAccessToken);
-//			PlaceWorker worker = api.placeWorkerForLocation(this, lastKnownLocation);
-//			new Thread(worker).start();
-//			worker.addObserver(this);
+			api = new API(googleAccessToken);
+			PlaceWorker worker = api.placeWorkerForLocation(this, lastKnownLocation);
+			new Thread(worker).start();
+			worker.addObserver(this);
 			
 			new Thread(new Runnable() {
 				public void run() {
@@ -124,7 +124,7 @@ public class PlacearLocationListener implements LocationListener, Observer {
 		}
 		
 		public Location getClosestLocation() {
-			System.out.println(locations.size());
+			//System.out.println(locations.size());
 			
 			if(locations.size() == 0) return null;
 			Location closestLocation = null;
@@ -134,7 +134,7 @@ public class PlacearLocationListener implements LocationListener, Observer {
 			
 			for(Location p: locations) {
 				float bearing = lastKnownLocation.bearingTo(p);
-				System.out.println("Bearing: " + bearing);
+				//System.out.println("Bearing: " + bearing);
 //				p.getLocation().getLatitude();
 //				Location l = p.getLocation();
 			}

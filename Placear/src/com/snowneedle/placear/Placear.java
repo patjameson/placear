@@ -32,12 +32,17 @@ public class Placear extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		Log.v("P", "Starting app. Froyo.");
+		Log.w("P", "Starting app. Froyo.");
+		Log.e("P", "Starting app. Froyo.");
+
 		setContentView(R.layout.activity_placear);
 		PlacearCamera preview = new PlacearCamera(this);
 		FrameLayout f = ((FrameLayout) findViewById(R.id.preview));
 		f.addView(preview);
 		
+		Log.v("P", "Starting app.");
+		System.out.println("Test");
 		
 		sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
 		
