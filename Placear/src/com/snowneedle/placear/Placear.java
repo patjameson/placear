@@ -7,9 +7,6 @@ import android.os.Bundle;
 import android.widget.FrameLayout;
 
 public class Placear extends Activity {
-	
-	private GLSurfaceView mGLView;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
