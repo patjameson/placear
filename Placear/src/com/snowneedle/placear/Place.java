@@ -40,8 +40,6 @@ public class Place {
 				_types.add(type);
 			}
 			
-			Log.w("debug", _types.toString());
-			
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}

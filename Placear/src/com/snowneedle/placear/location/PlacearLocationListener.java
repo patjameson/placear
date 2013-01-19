@@ -23,54 +23,67 @@ public class PlacearLocationListener implements LocationListener, Observer {
 		private ArrayList<Place> places;
 		private PlacearSensorEventListener sensorListener;
 		private API api;
+		ArrayList<Location> locations = new ArrayList<Location>();
 		
 		public PlacearLocationListener(Location lastKnown, SensorEventListener sensorListener, String googleAccessToken) {
 			this.lastKnownLocation = lastKnown; 
 			places = new ArrayList<Place>();
 			
-			api = new API(googleAccessToken);
-			PlaceWorker worker = api.placeWorkerForLocation(this, lastKnownLocation);
-			new Thread(worker).start();
-			worker.addObserver(this);
+//			api = new API(googleAccessToken);
+//			PlaceWorker worker = api.placeWorkerForLocation(this, lastKnownLocation);
+//			new Thread(worker).start();
+//			worker.addObserver(this);
 			
-//			Location l = new Location("");
-//			l.setLatitude(39.956465);
-//			l.setLongitude(-75.20442);
-//			locations.add(l);
-//			l = new Location("");
-//			l.setLatitude(39.954622);
-//			l.setLongitude(-75.19721);
-//			locations.add(l);
-//			l = new Location("");
-//			l.setLatitude(39.961596);
-//			l.setLongitude(-75.192833);
-//			locations.add(l);
-//			l = new Location("");
-//			l.setLatitude(39.949622);
-//			l.setLongitude(-75.17601);
-//			locations.add(l);
-//			l = new Location("");
-//			l.setLatitude(39.941791);
-//			l.setLongitude(-75.184851);
-//			locations.add(l);
-//			l = new Location("");
-//			l.setLatitude(39.939817);
-//			l.setLongitude(-75.200901);
-//			locations.add(l);
-//			l = new Location("");
-//			l.setLatitude(39.952525);
-//			l.setLongitude(-75.190065);
-//			locations.add(l);
-//			for(Location l1: locations) {
-//				Log.v(TAG, l1.toString());
-//			}
+			new Thread(new Runnable() {
+				public void run() {
+					System.out.println("in the thread");
+					while (true) {
+						getClosestLocation();
+						
+						try {
+							Thread.currentThread().sleep(1000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}).start();
+			
+			Location l = new Location("");
+			l.setLatitude(39.956465);
+			l.setLongitude(-75.20442);
+			locations.add(l);
+			l = new Location("");
+			l.setLatitude(39.954622);
+			l.setLongitude(-75.19721);
+			locations.add(l);
+			l = new Location("");
+			l.setLatitude(39.961596);
+			l.setLongitude(-75.192833);
+			locations.add(l);
+			l = new Location("");
+			l.setLatitude(39.949622);
+			l.setLongitude(-75.17601);
+			locations.add(l);
+			l = new Location("");
+			l.setLatitude(39.941791);
+			l.setLongitude(-75.184851);
+			locations.add(l);
+			l = new Location("");
+			l.setLatitude(39.939817);
+			l.setLongitude(-75.200901);
+			locations.add(l);
+			l = new Location("");
+			l.setLatitude(39.952525);
+			l.setLongitude(-75.190065);
+			locations.add(l);
+			
 			this.sensorListener = (PlacearSensorEventListener) sensorListener;
 		}
 		
 		@Override
 		public void update(Observable observable, Object data) {
 			places = (ArrayList<Place>)data;
-			Log.w("got place data", places.toString());
 		}
 		
 
@@ -111,17 +124,19 @@ public class PlacearLocationListener implements LocationListener, Observer {
 		}
 		
 		public Location getClosestLocation() {
-			if(places.size() == 0) return null;
+			System.out.println(locations.size());
+			
+			if(locations.size() == 0) return null;
 			Location closestLocation = null;
+			
 			
 			ArrayList<Place> chosenPlaces = new ArrayList<Place>();
 			
-			for(Place p: places) {
-				float bearing = lastKnownLocation.bearingTo(p.getLocation());
-				System.out.println(bearing);
-				p.getLocation().getLatitude();
-				Location l = p.getLocation();
-				
+			for(Location p: locations) {
+				float bearing = lastKnownLocation.bearingTo(p);
+				System.out.println("Bearing: " + bearing);
+//				p.getLocation().getLatitude();
+//				Location l = p.getLocation();
 			}
 			return closestLocation;
 		}

@@ -26,9 +26,8 @@ import android.util.Log;
 
 import android.widget.FrameLayout;
 
-public class Placear extends Activity implements SensorEventListener {
+public class Placear extends Activity {
 	SensorManager sensorManager;
-	Sensor compass;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,21 +37,15 @@ public class Placear extends Activity implements SensorEventListener {
 		PlacearCamera preview = new PlacearCamera(this);
 		FrameLayout f = ((FrameLayout) findViewById(R.id.preview));
 		f.addView(preview);
-		sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-		compass = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
 		
-		SensorManager sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
+		
+		sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
+		
 		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
 		PlacearLocationManager PLM = new PlacearLocationManager(lm, sensorManager, getGoogleAccessToken());
-		
-		//Log.v("Placear", "Created PLM.");
-		
-//		mGLView = new Test3d(this);
-//        setContentView(mGLView);
-		
 	}
 	
-	private String getGoogleAccessToken(){
+	private String getGoogleAccessToken() {
 		String token = "";
 		InputStream in;
 		try {
@@ -68,22 +61,5 @@ public class Placear extends Activity implements SensorEventListener {
 		return token;
 	}
 	
-	@Override
-	protected void onResume() {
-	    super.onResume();
-	    sensorManager.registerListener(this, compass, SensorManager.SENSOR_DELAY_NORMAL);
-	}
-
-	@Override
-	public void onAccuracyChanged(Sensor sensor, int accuracy) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onSensorChanged(SensorEvent event) {
-		double myAzimuth = Math.round(event.values[0]);
-        double myPitch = Math.round(event.values[1]);
-        double myRoll = Math.round(event.values[2]);
-	}
+	
 }

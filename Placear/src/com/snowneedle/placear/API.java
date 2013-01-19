@@ -62,6 +62,7 @@ public class API {
 		
 		@Override
 		public void run() {
+			System.out.println("fjdsklfdsjafsd");
 			String queryString = "json?key=" + _token + "&location=" + _location.getLatitude() +
 					"," + _location.getLongitude() + "&radius=300&sensor=true";
 					
@@ -81,6 +82,7 @@ public class API {
 					    builder.append(line + "\n");
 					}
 					responseBody = builder.toString();
+					System.out.println(responseBody);
 					json = new JSONObject(responseBody);
 				} catch (JSONException e) {
 					e.printStackTrace();

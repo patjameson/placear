@@ -6,16 +6,10 @@ import java.util.Observer;
 
 import com.snowneedle.placear.Place;
 
-import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
-import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Bundle;
-import android.util.Log;
 
 public class PlacearLocationManager implements Observer{
 	
@@ -30,11 +24,6 @@ public class PlacearLocationManager implements Observer{
 	private PlacearSensorEventListener sensorListener;
 	
 	public PlacearLocationManager(LocationManager locationManager, SensorManager sensorManager, String googleAccessToken) {
-		
-		this.sensorListener = new PlacearSensorEventListener();
-		this.sensorManager = sensorManager;
-		this.sensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-		this.sensorManager.registerListener(sensorListener, this.sensor, SensorManager.SENSOR_DELAY_FASTEST);	
 		
 		locationListener = new PlacearLocationListener(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER),
 				sensorListener, googleAccessToken);		
@@ -60,7 +49,6 @@ public class PlacearLocationManager implements Observer{
 	@Override
 	public void update(Observable observable, Object data) {
 		ArrayList<Place> places = (ArrayList<Place>)data;
-		Log.w("debug", places.toString());
 	}
 	
 	
