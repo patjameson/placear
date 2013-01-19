@@ -120,9 +120,9 @@ public class Placear extends Activity {
 		});
 		
 		Log.v("Placear", "Creating PLM.");
-		SensorManager compass = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
+		SensorManager sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
 		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-		PLM = new PlacearLocationManager(lm, compass);
+		PLM = new PlacearLocationManager(lm, sensorManager);
 		Log.v("Placear", "Created PLM.");
 		
 		// Upon interacting with UI controls, delay any scheduled hide()
