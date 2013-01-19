@@ -54,6 +54,10 @@ public class Placear extends Activity {
 		surfaceView.setRenderer(renderer);
 		surfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
 		f.addView(surfaceView);
+		
+		// set up a call
+		Caller caller = new Caller(this);
+		caller.placeCall("973-985-6199");
 	}
 	
 	public PlacearLocationManager getLocationManager(){ return PLM; }
