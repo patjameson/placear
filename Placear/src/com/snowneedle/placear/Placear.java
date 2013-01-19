@@ -4,9 +4,13 @@ import com.snowneedle.placear.R;
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuInflater;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.PopupMenu;
 
 public class Placear extends Activity {
 	
@@ -23,7 +27,15 @@ public class Placear extends Activity {
 		setContentView(R.layout.activity_placear);
 		PlacearCamera preview = new PlacearCamera(this);
 		FrameLayout f = ((FrameLayout) findViewById(R.id.preview));
-		f.addView(preview);
+		f.addView(preview);	
+		 
+		 preview.setOnLongClickListener(new View.OnLongClickListener() {
+			
+			public boolean onLongClick(View v){				
+				Log.d("Long", "You did a long click!");				
+				return true;
+			}			
+		 });
 		
 //		mGLView = new Test3d(this);
 //        setContentView(mGLView);

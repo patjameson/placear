@@ -28,11 +28,12 @@ class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback {
 	@Override 
     public void onDraw(Canvas canvas) {
 		System.out.println("fdkjlfsa");
-		paint.setColor(Color.RED);
+		paint.setColor(Color.BLACK);
 		paint.setStrokeWidth(3);
 		paint.setTextSize(40);
 //		canvas.translate(20, 20);
-//		canvas.rotate(20);
+		canvas.rotate(0);
+		canvas.skew(1, 0);
 //		canvas.translate(-10, -10);
 		
 //		android.graphics.Camera cam = new android.graphics.Camera();
@@ -54,7 +55,7 @@ class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback {
 //	    imageMatrix.setPolyToPoly(srcPoints, 0, destPoints, 0, 4);
 //	    canvas.setMatrix(imageMatrix);
 //	    canvas.rotate(10);
-//		canvas.drawText("Test Text Here", 100, 200, paint);
+		canvas.drawText("Test Text Here", 100, 200, paint);
     }
 	
 
@@ -79,4 +80,6 @@ class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback {
 		parameters.setPreviewSize(w, h);
 		camera.startPreview();
 	}
+
+
 }
