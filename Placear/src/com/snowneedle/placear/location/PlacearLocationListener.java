@@ -118,6 +118,7 @@ public class PlacearLocationListener implements LocationListener, Observer {
 			
 			for(Place p: places) {
 				float bearing = lastKnownLocation.bearingTo(p.getLocation());
+				System.out.println(bearing);
 				p.getLocation().getLatitude();
 				Location l = p.getLocation();
 				
