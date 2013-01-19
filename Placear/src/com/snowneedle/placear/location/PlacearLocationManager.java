@@ -1,6 +1,10 @@
 package com.snowneedle.placear.location;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+
+import com.snowneedle.placear.Place;
 
 import android.hardware.GeomagneticField;
 import android.hardware.Sensor;
@@ -13,7 +17,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
-public class PlacearLocationManager {
+public class PlacearLocationManager implements Observer{
 	
 	private LocationManager locationManager;
 	private PlacearLocationListener locationListener;
@@ -39,6 +43,7 @@ public class PlacearLocationManager {
 				updateMs, updateDist, locationListener);
 		Log.v("MYLOC", getLastKnownLocation().toString());
 		Log.v("TEST", locationListener.getClosestLocation().toString());
+
 	}
 	
 	public Location getLastKnownLocation() {
@@ -52,6 +57,13 @@ public class PlacearLocationManager {
 	public double getLastLat() {
 		return locationListener.getLastLat();
 	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		ArrayList<Place> places = (ArrayList<Place>)data;
+		Log.w("debug", places.toString());
+	}
+	
 	
 	
 	
