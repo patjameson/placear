@@ -16,6 +16,7 @@ public class PlacearLocationManager implements Observer{
 	private LocationManager locationManager;
 	private PlacearLocationListener locationListener;
 	private Location lastKnownLocation;
+	private ArrayList<Place> places;
 	private final int updateMs = 0;
 	private final int updateDist = 0;
 	
@@ -30,13 +31,13 @@ public class PlacearLocationManager implements Observer{
 		this.locationManager = locationManager;
 		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
 				updateMs, updateDist, locationListener);
-		
-
 	}
 	
 	public Location getLastKnownLocation() {
 		return locationListener.getLastKnownLocation();
 	}
+	public ArrayList<Place> getPlaces(){ return places; }
+	public PlacearSensorEventListener getSensorListener(){ return sensorListener; }
 	
 	public double getLastLong() {
 		return locationListener.getLastLong();
@@ -48,14 +49,7 @@ public class PlacearLocationManager implements Observer{
 
 	@Override
 	public void update(Observable observable, Object data) {
-		ArrayList<Place> places = (ArrayList<Place>)data;
+		places = (ArrayList<Place>)data;
 	}
-	
-	
-	
-	
-	
-	
-
 
 }

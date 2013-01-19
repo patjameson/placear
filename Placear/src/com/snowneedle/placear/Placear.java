@@ -15,8 +15,10 @@ import com.snowneedle.placear.location.PlacearLocationManager;
 
 import android.app.Activity;
 import android.opengl.GLSurfaceView;
+import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
 import android.content.Context;
+import android.graphics.PixelFormat;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -28,22 +30,34 @@ import android.widget.FrameLayout;
 
 public class Placear extends Activity {
 	SensorManager sensorManager;
+	PlacearLocationManager PLM;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
+		
+		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
+		PLM = new PlacearLocationManager(lm, sensorManager, getGoogleAccessToken());
 		
 		setContentView(R.layout.activity_placear);
 		PlacearCamera preview = new PlacearCamera(this);
 		FrameLayout f = ((FrameLayout) findViewById(R.id.preview));
 		f.addView(preview);
 		
-		
-		sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
-		
-		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-		PlacearLocationManager PLM = new PlacearLocationManager(lm, sensorManager, getGoogleAccessToken());
+		// adding in opengl overlay
+		Renderer renderer = new AROverlay(this);
+		GLSurfaceView surfaceView = new GLSurfaceView(this);
+		surfaceView.setZOrderMediaOverlay(true);
+		surfaceView.setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+		surfaceView.setRenderer(renderer);
+		surfaceView.getHolder().setFormat(PixelFormat.TRANSPARENT);
+		f.addView(surfaceView);
 	}
+	
+	public PlacearLocationManager getLocationManager(){ return PLM; }
+	public SensorManager getSensorManager(){ return sensorManager; }
 	
 	private String getGoogleAccessToken() {
 		String token = "";

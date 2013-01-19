@@ -21,6 +21,16 @@ public class Place {
 	private String _name;
 	private ArrayList<String> _types;
 	
+	public Place(){
+		_location = new Location("");
+		_location.setLatitude(Math.random()*100);
+		_location.setLongitude(Math.random()*100);
+		_address = "address";
+		_name = "name";
+		_types = new ArrayList<String>();
+		_types.add("food");
+	}
+	
 	public Place(JSONObject data){
 		try {
 			JSONObject geometry = data.getJSONObject("geometry");
