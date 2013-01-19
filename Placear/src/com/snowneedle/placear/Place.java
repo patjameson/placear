@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import android.location.Location;
 import android.os.AsyncTask;
+import android.util.Log;
 
 /*
  * This file is the essence of java
@@ -37,11 +38,20 @@ public class Place {
 	
 	public Place(JSONObject data){
 		try {
+//			Log.e("farts", data.toString());
+			
 			JSONObject geometry = data.getJSONObject("geometry");
-			JSONObject openingHours = data.getJSONObject("opening_hours");
-			openNow = openingHours.getBoolean("open_now");
-			rating = data.getDouble("rating");
-			priceLevel = data.getInt("price_level");
+			
+			if(data.has("opening_hours")){
+				JSONObject openingHours = data.getJSONObject("opening_hours");
+				openNow = openingHours.getBoolean("open_now");
+			}
+			if(data.has("rating")){
+				rating = data.getDouble("rating");
+			}
+			if(data.has("price_level")){
+				priceLevel = data.getInt("price_level");
+			}
 			JSONObject location = geometry.getJSONObject("location");
 			reference = data.getString("reference");
 			_location = new Location("");
@@ -55,6 +65,8 @@ public class Place {
 				String type = (String) typesData.get(i);
 				_types.add(type);
 			}
+			
+			Log.e("self", toString());
 			
 		} catch (JSONException e) {
 			e.printStackTrace();

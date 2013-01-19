@@ -30,9 +30,67 @@ public class API {
 	private final String _mapRoot = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
 	private final String _mapDetailRoot = "https://maps.googleapis.com/maps/api/place/details/json";
 	
-	public API(String googleToken, String facebookToken){
+	public API(String googleToken){
 		_googleToken = googleToken;
 		_googleClient = AndroidHttpClient.newInstance("PlaceAR");
+	}
+	
+	public PlaceWorker placeWorkerForLocation(Location location){
+		return new PlaceWorker(location);
+	}
+	
+	public class PlaceWorker extends Observable implements Runnable {
+		private Location _location;
+		
+		public PlaceWorker(Location location) {
+			_location = location;
+		}
+		
+		private PlaceDetail getDetail(Place place) throws IOException, JSONException{
+			HashMap<String, String> params = new HashMap<String, String>();
+			params.put("key", _googleToken);
+			params.put("reference", place.getReference());
+			params.put("sensor", "true");
+			URI query = createQueryString(_mapDetailRoot, params);
+			HttpGet detailRequest = new HttpGet(query);
+			HttpResponse response = _googleClient.execute(detailRequest);
+			JSONObject json = createJSONFromResponse(response);
+			
+			Log.e("nick is dumb", query.toString());
+			
+			return new PlaceDetail(json.getJSONObject("result"));
+		}
+		
+		public void run() {
+			URI query = createQueryString(_mapRoot, new HashMap<String, String>(){{
+				put("key", _googleToken);
+				put("location", _location.getLatitude() + "," + _location.getLongitude());
+				put("rankby", "distance");
+				put("types","cafe%7Cchurch%7Ccity_hall%7Cclothing_store%7Cconvenience_store%7Cestablishment%7Cstore%7Chealth%7Clibrary%7Cschool%7Clodging%7Cuniversity%7Cmuseum%7Cnight_club%7Cpharmacy%7Cplace_of_worship%7Crestaurant%7Cshopping_mall");
+				put("sensor", "true");
+			}});
+			HttpGet placeRequest = new HttpGet(query);
+			while(true){
+				HttpResponse response;
+				try {
+					response = _googleClient.execute(placeRequest);
+					JSONObject json = createJSONFromResponse(response);
+					
+					ArrayList<Place> places = JSONToPlaces(json);
+					
+					for(Place place : places) {
+						PlaceDetail detail = getDetail(place);
+						place.setDetail(detail);
+					}
+					setChanged();
+					notifyObservers(places);
+					
+					Thread.currentThread().sleep(30000);
+				} catch (Exception e){
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	private URI createQueryString(String baseUrl, HashMap<String, String> params) {
@@ -99,213 +157,4 @@ public class API {
 		}
 		return places;
 	}
-//	
-//	public class PlaceWorker extends Observable implements Runnable {
-//		
-//		private Location _location;
-//		
-//		public PlaceWorker(Location loc) {
-//			_location = loc;
-//		}
-//		
-//		@Override
-//		public void run() {
-//			URI query = createQueryString(_mapRoot, new HashMap<String, String>(){{
-//				put("key", _googleToken);
-//				put("location", _location.getLatitude() + "," + _location.getLongitude());
-//				put("radius", "300");
-//				put("sensor", "true");
-//			}});
-//			HttpGet request = new HttpGet(query);
-//			HttpResponse response;
-//			JSONObject json = null;
-//			ArrayList<Place> places = new ArrayList<Place>();
-//			while(true) {
-//				response = _googleClient.execute(request);
-//				json = createJSONFromResponse(response);
-//				places = JSONToPlaces(json);
-//				new AsyncTask<Place, Void, PlaceDetail>() {
-//					@Override
-//					protected PlaceDetail doInBackground(Place... arg0) {
-//						URI detailQuery;
-//						HttpGet req;
-//						HttpResponse resp;
-//						JSONObject j = null;
-//						for(Place p: arg0) {
-//							detailQuery = createQueryString(_mapDetailRoot, new HashMap<String, String>() {{
-//								put("key", _googleToken);
-//								put("reference", p.getReference());
-//								put("sensor", "true");
-//							}});
-//							req = new HttpGet(detailQuery);
-//							resp = _googleClient.execute(req);
-//							j = createJSONFromResponse(resp);
-//							p.setDetail(new PlaceDetail(j.getJSONObject("result")));
-//						}
-//					}
-//				}.execute((Place[]) places.toArray());
-//			}
-//		}
-//	}
-	
-	public class PlaceWorker extends Observable implements Runnable {
-		private Location _location;
-		
-		public PlaceWorker(Location location) {
-			_location = location;
-		}
-		
-		private PlaceDetail getDetail(Place place) throws IOException, JSONException{
-			HashMap<String, String> params = new HashMap<String, String>();
-			params.put("key", _googleToken);
-			params.put("reference", place.getReference());
-			params.put("sensor", "true");
-			URI query = createQueryString(_mapDetailRoot, params);
-			HttpGet detailRequest = new HttpGet(query);
-			HttpResponse response = _googleClient.execute(detailRequest);
-			JSONObject json = createJSONFromResponse(response);
-			return new PlaceDetail(json.getJSONObject("result"));
-		}
-		
-		public void run() {
-			URI query = createQueryString(_mapRoot, new HashMap<String, String>(){{
-				put("key", _googleToken);
-				put("location", _location.getLatitude() + "," + _location.getLongitude());
-				put("radius", "300");
-				put("sensor", "true");
-			}});
-			HttpGet placeRequest = new HttpGet(query);
-			while(true){
-				HttpResponse response;
-				try {
-					response = _googleClient.execute(placeRequest);
-					JSONObject json = createJSONFromResponse(response);
-					ArrayList<Place> places = JSONToPlaces(json);
-					for(Place place : places) {
-						PlaceDetail detail = getDetail(place);
-						place.setDetail(detail);
-					}
-					setChanged();
-					notifyObservers(places);
-					Thread.currentThread().sleep(5000);
-				} catch (Exception e){
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-	
-//	private abstract class APIWorker extends Observable implements Runnable {
-//		
-//		protected boolean infinite = true;
-//		
-//		abstract AndroidHttpClient getClient();
-//		abstract URI getQuery();
-//		abstract JSONObject processResponse(HttpResponse r);
-//		abstract Object processJSON(JSONObject j);
-//
-//		@Override
-//		public void run() {
-//			URI query = getQuery();
-//			HttpGet request = new HttpGet(query);
-//			HttpResponse response;
-//			JSONObject json = null;
-//			Log.v("API", "Starting thread.");
-//			do {
-//				try {
-//					Log.v("API", "Executing the req.");
-//					response = getClient().execute(request);
-//					Log.v("API", "Processing the resp.");
-//					json = processResponse(response);
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//				setChanged();
-//				Log.v("API", "Notifying.");
-//				notifyObservers(processJSON(json));
-//				try {
-//					Thread.currentThread().sleep(5000);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//			} while(infinite);
-//			
-//		}
-//		
-//	}
-	
-//	public class PlaceWorker extends APIWorker {
-//		private Location _location;
-//		
-//		public PlaceWorker(Location location) {
-//			_location = location;
-//		}
-//		
-//		@Override
-//		JSONObject processResponse(HttpResponse r) {
-//			return createJSONFromResponse(r);
-//		}
-//
-//		@Override
-//		AndroidHttpClient getClient() {
-//			return _googleClient;
-//		}
-//
-//		@Override
-//		URI getQuery() {
-//			return null;
-//		}
-//
-//		@Override
-//		Object processJSON(JSONObject j) {
-//			return JSONToPlaces(j);
-//		}
-//	}
-	
-//	public class PlaceDetailWorker extends APIWorker {
-//		
-//		private String _reference;
-//		
-//		public PlaceDetailWorker(String reference) {
-//			this.infinite = false;
-//			_reference = reference;
-//		}
-//
-//		@Override
-//		AndroidHttpClient getClient() {
-//			return _googleClient;
-//		}
-//
-//		@Override
-//		URI getQuery() {
-////			return 
-//		}
-//			
-//
-//		@Override
-//		JSONObject processResponse(HttpResponse r) {
-//			AsyncTask<Place>
-//			return createJSONFromResponse(r);
-//		}
-//		
-//		private PlaceDetail JSONToPlaceDetail(JSONObject j) {
-//			try {
-//				return new PlaceDetail(j.getJSONObject("result"));
-//			} catch (JSONException e) {
-//				e.printStackTrace();
-//				return null;
-//			}
-//		}
-//
-//		@Override
-//		Object processJSON(JSONObject j) {
-//			return JSONToPlaceDetail(j);
-//		}
-//		
-//	}
-	
-	public PlaceWorker placeWorkerForLocation(Location location){
-		return new PlaceWorker(location);
-	}
-	
 }

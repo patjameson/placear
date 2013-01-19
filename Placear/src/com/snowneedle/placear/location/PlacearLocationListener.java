@@ -25,12 +25,12 @@ public class PlacearLocationListener implements LocationListener, Observer {
 		ArrayList<Location> locations = new ArrayList<Location>();
 		
 		public PlacearLocationListener(Location lastKnown, SensorEventListener sensorListener,
-				String googleAccessToken, String facebookAccessToken) {
+				String googleAccessToken) {
 			this.lastKnownLocation = lastKnown; 
 			places = new ArrayList<Place>();
 			
-			api = new API(googleAccessToken, facebookAccessToken);
-			PlaceWorker worker = api.placeWorkerForLocation(this, lastKnownLocation);
+			api = new API(googleAccessToken);
+			PlaceWorker worker = api.placeWorkerForLocation(lastKnownLocation);
 			new Thread(worker).start();
 			worker.addObserver(this);
 			
