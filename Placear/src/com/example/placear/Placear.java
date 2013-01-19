@@ -10,7 +10,6 @@ public class Placear extends Activity {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_placear);
-		
 		PlacearCamera preview = new PlacearCamera(this);
 		((FrameLayout) findViewById(R.id.preview)).addView(preview);
 	}
