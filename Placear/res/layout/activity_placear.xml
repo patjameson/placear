@@ -5,33 +5,6 @@
     android:background="#0099cc"
     tools:context=".Placear" >
 
-    <TextView
-        android:id="@+id/fullscreen_content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:keepScreenOn="true"       
-        android:textColor="#ffffff"
-        android:textSize="20sp"
-        android:textStyle="bold" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true" >
-
-        <TextView
-            android:id="@+id/bot_bar"
-            android:layout_width="fill_parent"
-            android:layout_height="45sp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:text="@string/lat_long"
-            android:textColor="#ffffff"
-            android:textSize="14sp" 
-        	android:background="@color/black" />        
-    </RelativeLayout>
-
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     	android:id="@+id/layout"
 		android:layout_width="fill_parent"
