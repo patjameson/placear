@@ -2,6 +2,13 @@
 <resources>
 
     <string name="app_name">Placear</string>
-    <string name="lat_long">Lat: %, Long: %</string>
+    <string name="lat_long" formatted="true">Lat: %1$s, Long: %2$s | Heading: Not Implemented</string>
+    <string name="popup_title">Placear App</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="popup_menu_title">PlaceAR Facebook Login</string>
+    <string name="cancel">Cancel</string>
+    <string name="signin">Sign-In</string>
+    <string name="menu_search">Search for Events</string>
 
 </resources>

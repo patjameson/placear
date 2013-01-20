@@ -12,6 +12,8 @@ import android.graphics.Paint;
 import android.hardware.Camera;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.EditText;
+import android.widget.TextView;
 
 public class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback {
 	private SurfaceHolder mHolder;
@@ -34,7 +36,8 @@ public class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback
 	
 	@Override 
     public void onDraw(Canvas canvas) {
-		paint.setColor(Color.RED);
+
+		paint.setColor(Color.WHITE);
 		paint.setStrokeWidth(3);
 		paint.setTextSize(35);
 		canvas.rotate(-90, 250, 250);
@@ -67,7 +70,6 @@ public class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback
 		
 		this.invalidate();
     }
-	
 
 	public void surfaceCreated(SurfaceHolder holder) {
 		camera = Camera.open(0);
@@ -88,4 +90,6 @@ public class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback
 		parameters.setPreviewSize(w, h);
 		camera.startPreview();
 	}
+
+
 }
