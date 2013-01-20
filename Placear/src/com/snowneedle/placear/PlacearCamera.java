@@ -1,6 +1,15 @@
 package com.snowneedle.placear;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
+
+import com.snowneedle.placear.API.PlaceWorker;
+import com.snowneedle.placear.location.PlacearLocationListener;
+import com.snowneedle.placear.location.PlacearLocationListener.Refresh;
+import com.snowneedle.placear.location.PlacearLocationManager;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -8,56 +17,86 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.hardware.Camera;
+import android.location.Location;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.widget.EditText;
+import android.widget.TextView;
 
-class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback {
+public class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback, Observer {
 	SurfaceHolder mHolder;
 	public Camera camera;
 	Paint paint = new Paint();
+	PlacearLocationListener ll;
+	String text = "Nothing directly ahead...fd";
 
-	PlacearCamera(Context context) {
+	PlacearCamera(Placear context, PlacearLocationListener cam) {
 		super(context);
 		this.setWillNotDraw(false);
+		
+		ll = cam;
+		
+//		Refresh worker = cam.refreshForLocation(this);
+//		new Thread(worker).start();
+//		worker.addObserver(this);
 
 		mHolder = getHolder();
 		mHolder.addCallback(this);
 		mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 	}
 	
+	@Override
+	public void update(Observable observable, Object data) {
+		//this.invalidate();
+	}
+	
 	@Override 
     public void onDraw(Canvas canvas) {
-		System.out.println("fdkjlfsa");
-		paint.setColor(Color.BLACK);
+
+		paint.setColor(Color.WHITE);
 		paint.setStrokeWidth(3);
 		paint.setTextSize(40);
-//		canvas.translate(20, 20);
 		canvas.rotate(0);
-		canvas.skew(1, 0);
-//		canvas.translate(-10, -10);
+		canvas.skew(.25f, 0);
+
+		if (ll != null) {
+			Place loc = ll.getClosestLocation();
+			if (loc != null) {
+				canvas.drawText(loc.getName(), 300, 200, paint);		
+			}
+		}	
 		
-//		android.graphics.Camera cam = new android.graphics.Camera();
-//		cam.save();
-//		ca
+		Location cur_loc = ll.getLastKnownLocation();
 		
-//		Matrix imageMatrix = new Matrix();
-//	    float[] srcPoints = {
-//	        0, 0,
-//	        0, 200,
-//	        200, 200,
-//	        200, 0};
-//	    int rotation = -150;
-//	    float[] destPoints = {
-//	        rotation, rotation/2f,
-//	        rotation, 200 - rotation/2f,
-//	        200 - rotation, 200,
-//	        200 - rotation, 0};
-//	    imageMatrix.setPolyToPoly(srcPoints, 0, destPoints, 0, 4);
-//	    canvas.setMatrix(imageMatrix);
-//	    canvas.rotate(10);
-		canvas.drawText("Test Text Here", 100, 200, paint);
+		double temp_lat = cur_loc.getLatitude();
+		double temp_long = cur_loc.getLongitude();
+		float accu = cur_loc.getAccuracy();
+		
+//		DecimalFormat twoD = new DecimalFormat("#.##");
+//      double lat = Double.valueOf(twoD.format(temp_lat));
+//      double longi = Double.valueOf(twoD.format(temp_long));      
+        String lats = Double.toString(temp_lat);
+        String longs = Double.toString(temp_long);
+        
+        canvas.drawText("Lat: "+ lats, 300, 350, paint);
+        canvas.drawText("Long: " + longs, 300, 400, paint);
+        canvas.drawText("Accu: "+ accu, 300, 450, paint);
+        
+//        String lat_long = getResources().getString(R.string.lat_long);
+//        String lat_long_cur = String.format(lat_long, lats, longs);
+        
+        
+        
+//        EditText leftText = (EditText) findViewById(R.id.bot_bar);
+//        leftText.setText(lat_long_cur);	
+		
+		try {
+			Thread.currentThread().sleep(200);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		this.invalidate();
     }
-	
 
 	public void surfaceCreated(SurfaceHolder holder) {
 		// The Surface has been created, acquire the camera and tell it where

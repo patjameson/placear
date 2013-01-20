@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Placear</string>
-    <string name="lat_long" formatted="false">Lat: %, Long: % | Heading %</string>
+    <string name="lat_long" formatted="true">Lat: %1$s, Long: %2$s | Heading: Not Implemented</string>
     <string name="popup_title">Placear App</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
