@@ -1,11 +1,16 @@
 package com.snowneedle.placear;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 public class PlaceDetail {
@@ -13,6 +18,9 @@ public class PlaceDetail {
 	private HashMap<Integer, String> dayMap;
 	private HashMap<String, HashMap<String, String>> storeHours; // {Sunday: {open: t1, close: t2}}
 	private String telephoneNumber;
+	private String iconLink;
+	private Bitmap icon;
+	private String address;
 	
 	public PlaceDetail(JSONObject result) {
 		dayMap = new HashMap<Integer, String>();
@@ -25,6 +33,18 @@ public class PlaceDetail {
 		dayMap.put(5, "Friday");
 		dayMap.put(6, "Saturday");
 		try {
+			if (result.has("icon")){
+				iconLink = result.getString("icon");
+				URL link;
+				try {
+					link = new URL(iconLink);
+					icon = BitmapFactory.decodeStream(link.openConnection().getInputStream());
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} 
+			}
 			if (result.has("international_phone_number")){
 				telephoneNumber = result.getString("international_phone_number");
 			}
@@ -74,7 +94,12 @@ public class PlaceDetail {
 					}
 					
 				}
-				Log.e("API", storeHours.toString());
+			}
+			
+			if(result.has("formatted_address")) {
+				address = result.getString("formatted_address");
+			} else {
+				address = "Address not available.";
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -116,6 +141,14 @@ public class PlaceDetail {
 		String ret = hour + ":" + min;
 		if(am) return ret + "AM";
 		else return ret + "PM";
+	}
+	
+	public Bitmap getIcon() {
+		return icon;
+	}
+	
+	public String getAddress() {
+		return address;
 	}
 	
 }

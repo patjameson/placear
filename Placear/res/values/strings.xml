@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Placear</string>
+    <string name="app_name">PlaceAR</string>
     <string name="lat_long" formatted="true">Lat: %1$s, Long: %2$s | Heading: Not Implemented</string>
-    <string name="popup_title">Placear App</string>
+    <string name="popup_title">PlaceAR App</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="popup_menu_title">PlaceAR Facebook Login</string>

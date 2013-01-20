@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
@@ -13,9 +14,9 @@ import android.content.Context;
 import android.hardware.SensorManager;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.TextView;
 
 import com.snowneedle.placear.location.PlacearLocationManager;
 
@@ -65,37 +66,10 @@ public class Placear extends Activity {
 		PLM = new PlacearLocationManager(lm, sensorManager, getGoogleAccessToken());
 		
 
-		preview = new PlacearCamera(this, PLM);
+		preview = new PlacearCamera(this, PLM, bar);
 		FrameLayout f = ((FrameLayout) findViewById(R.id.preview));
-
+		
 		f.addView(preview);		
-		
-		final TextView text = (TextView) findViewById(R.id.layout); 
-        text.setText("Hello");
-
-	 preview.setOnLongClickListener(new View.OnLongClickListener() {
-			 
-		public boolean onLongClick(View v){
-				if (HOLD_TOGGLE) {    
-			
-					bar.show();
-		}	
-			return true;			
-		}			
-		 });
-
-	 preview.setOnClickListener(new View.OnClickListener() {		 
-		
-		@Override
-		public void onClick(View v) {
-			if (HOLD_TOGGLE) {
-				bar.hide();
-			}
-			// TODO Auto-generated method stub			
-		}
-	});	
-		
-
 	}
 	
 	public PlacearLocationManager getLocationManager(){ return PLM; }

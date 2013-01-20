@@ -27,14 +27,8 @@ public class API {
 	
 	private String _googleToken;	
 	private AndroidHttpClient _googleClient;
-<<<<<<< HEAD
-//	private URI _facebookRoot;
-	private URI _googleRoot; 
-	private JSONObject _locationsCache;
-=======
 	private final String _mapRoot = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
 	private final String _mapDetailRoot = "https://maps.googleapis.com/maps/api/place/details/json";
->>>>>>> 67808becfad4b66e9ed9532cb97310b12abda409
 	
 	public API(String googleToken){
 		_googleToken = googleToken;
@@ -60,62 +54,11 @@ public class API {
 			URI query = createQueryString(_mapDetailRoot, params);
 			HttpGet detailRequest = new HttpGet(query);
 			HttpResponse response = _googleClient.execute(detailRequest);
-			JSONObject json = createJSONFromResponse(response);
-			
-			Log.e("nick is dumb", query.toString());
-			
+			JSONObject json = createJSONFromResponse(response);			
 			return new PlaceDetail(json.getJSONObject("result"));
 		}
 		
 		public void run() {
-<<<<<<< HEAD
-			while (_location == null) {
-
-				System.out.println("waiting");
-				try {
-					Thread.currentThread().sleep(1000);
-
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			String queryString = "json?key=" + _token + "&location=" + _location.getLatitude() +
-					"," + _location.getLongitude() + "&rankby=distance&sensor=true&types=cafe%7Cchurch%7Ccity_hall%7Cclothing_store%7Cconvenience_store%7Cestablishment%7Cstore%7Chealth%7Clibrary%7Cschool%7Clodging%7Cuniversity%7Cmuseum%7Cnight_club%7Cpharmacy%7Cplace_of_worship%7Crestaurant%7Cshopping_mall";
-			
-			HttpGet request = new HttpGet(_googleRoot.resolve(queryString));
-			System.out.println(_googleRoot.resolve(queryString));
-			HttpResponse response;
-			String responseBody = "";
-			JSONObject json = null;
-			while(true) {
-				
-				System.out.println("CALLING GOOGLE");
-				try {
-					response = _googleClient.execute(request);
-					System.out.println(_googleRoot.resolve(queryString));
-					InputStream stream = response.getEntity().getContent();
-					BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8);
-					StringBuilder builder = new StringBuilder();
-					String line = null;
-					while ((line = reader.readLine()) != null)
-					{
-					    builder.append(line + "\n");
-					}
-					responseBody = builder.toString();
-					System.out.println(responseBody);
-					json = new JSONObject(responseBody);
-					_locationsCache = json;
-				} catch (JSONException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				setChanged();
-				notifyObservers(JSONToPlaces(_locationsCache));
-				try {
-					Thread.currentThread().sleep(60000);
-				} catch (InterruptedException e) {
-=======
 			URI query = createQueryString(_mapRoot, new HashMap<String, String>(){{
 				put("key", _googleToken);
 				put("location", _location.getLatitude() + "," + _location.getLongitude());
@@ -139,9 +82,8 @@ public class API {
 					setChanged();
 					notifyObservers(places);
 					
-					Thread.currentThread().sleep(30000);
+					Thread.currentThread().sleep(10000000);
 				} catch (Exception e){
->>>>>>> 67808becfad4b66e9ed9532cb97310b12abda409
 					e.printStackTrace();
 				}
 			}
@@ -153,7 +95,6 @@ public class API {
 		if(params.size() > 0) {
 			ret += "?";
 		}
-		Log.v("API", "Building query.");
 		Object[] keys = params.keySet().toArray();
 		for(int i = 0; i < keys.length; i++) {
 			String s = keys[i].toString();
@@ -164,7 +105,6 @@ public class API {
 			}
 		}
 		try {
-			Log.v("API", "URI Created: " + ret);
 			return new URI(ret);
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
@@ -186,7 +126,6 @@ public class API {
 			    builder.append(line + "\n");
 			}
 			responseBody = builder.toString();
-			System.out.println(responseBody);
 			json = new JSONObject(responseBody);
 		} catch (IllegalStateException e) {
 			e.printStackTrace();

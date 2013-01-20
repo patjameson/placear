@@ -17,10 +17,9 @@ import android.util.Log;
 public class Place {
 
 	private Location _location;
-	private String _address;
 	private String _name;
 	private ArrayList<String> _types;
-	private boolean openNow;
+	private int openNow;
 	private double rating;
 	private int priceLevel;
 	private String reference;
@@ -30,7 +29,6 @@ public class Place {
 		_location = new Location("");
 		_location.setLatitude(Math.random()*100);
 		_location.setLongitude(Math.random()*100);
-		_address = "address";
 		_name = "name";
 		_types = new ArrayList<String>();
 		_types.add("food");
@@ -44,8 +42,11 @@ public class Place {
 			
 			if(data.has("opening_hours")){
 				JSONObject openingHours = data.getJSONObject("opening_hours");
-				openNow = openingHours.getBoolean("open_now");
+				openNow = openingHours.getBoolean("open_now") ? 1 : 0;
+			} else {
+				openNow = 2; // Not a store... doesn't have hours, etc
 			}
+			
 			if(data.has("rating")){
 				rating = data.getDouble("rating");
 			}
@@ -57,31 +58,26 @@ public class Place {
 			_location = new Location("");
 			_location.setLatitude(location.getDouble("lat"));
 			_location.setLongitude(location.getDouble("lng"));
-			_address = "address parsing not working";
 			_name = data.getString("name");
 			JSONArray typesData = data.getJSONArray("types");
 			_types = new ArrayList<String>();
 			for(int i=0; i<typesData.length(); i++){
 				String type = (String) typesData.get(i);
 				_types.add(type);
-			}
-			
-			Log.e("self", toString());
-			
+			}			
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void getDetail(){
-		
+	public PlaceDetail getDetail(){
+		return detail;
 	}
 	
 	public Location getLocation(){ return _location; }
-	public String getAddress(){ return _address; }
 	public String getName(){ return _name; }
 	public ArrayList<String> getTypes(){ return _types; }
-	public boolean isOpenNow() { return openNow; }
+	public int isOpenNow() { return openNow; }
 	public double getRating() { return rating; }
 	public int getPriceLevel() { return priceLevel; }
 	public String getReference() { return reference; }

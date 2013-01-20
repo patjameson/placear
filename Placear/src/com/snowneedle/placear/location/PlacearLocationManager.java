@@ -36,8 +36,8 @@ public class PlacearLocationManager implements SensorEventListener, LocationList
 		sensorManager.registerListener(this, compass, SensorManager.SENSOR_DELAY_NORMAL);
 		
 		places = new ArrayList<Place>();
-		api = new API(googleAccessToken);
-		
+		api = new API(googleAccessToken);		
+	
 		PlaceWorker worker = api.placeWorkerForLocation(locationManager.getLastKnownLocation(provider));
 		new Thread(worker).start();
 		worker.addObserver(this);
@@ -56,13 +56,13 @@ public class PlacearLocationManager implements SensorEventListener, LocationList
 	
 	/******GET CLOSEST LOCATION******/
 	public Place getClosestLocation() {
-		System.out.println(places.size());
+		//System.out.println(places.size());
 		if(places.size() == 0) return null;
 		
 		Place closestLocation = null;
 		
 		Location lastKnownLocation = locationManager.getLastKnownLocation(provider);
-		System.out.println(lastKnownLocation.getAccuracy() + " " + azimuth + " " + lastKnownLocation.getLatitude());
+		//System.out.println(lastKnownLocation.getAccuracy() + " " + azimuth + " " + lastKnownLocation.getLatitude());
 		
 		if (azimuth != -1 && lastKnownLocation != null) {
 			float direction = azimuth;
@@ -70,11 +70,15 @@ public class PlacearLocationManager implements SensorEventListener, LocationList
 			if (direction > 180)
 				direction = -(360 - direction);
 			
+			direction += 90;
+			if (direction >180)
+				direction -= 360;
+			
 			double closestDistance = -1;
 			
 			for(Place p: places) {
 				float bearing = lastKnownLocation.bearingTo(p.getLocation());
-				if (Math.abs(bearing-direction) < 30) {
+				if (Math.abs(bearing-direction) < 20) {
 					double curDistance = ((p.getLocation().getLatitude()-lastKnownLocation.getLatitude()) * 
 							(p.getLocation().getLatitude()-lastKnownLocation.getLatitude()) +
 							(p.getLocation().getLongitude()-lastKnownLocation.getLongitude()) * 
@@ -96,6 +100,10 @@ public class PlacearLocationManager implements SensorEventListener, LocationList
 	@Override
 	public void update(Observable observable, Object data) {
 		places = (ArrayList<Place>)data;
+	}
+	
+	public Location getCurrentLocation() {
+		return locationManager.getLastKnownLocation(provider);
 	}
 
 	@Override
