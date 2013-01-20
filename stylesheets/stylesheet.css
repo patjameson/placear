@@ -56,6 +56,12 @@ body {
   color: #666;
 }
 
+.tagline {
+	text-align:center;
+	font-size:35px;
+	font-family: "Droid Sans", Arial, serif;
+}
+
 a {
   color: #2879d0;
 }
