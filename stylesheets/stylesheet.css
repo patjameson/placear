@@ -200,8 +200,6 @@ ul, ol, dl {
 hr {
   height: 1px;
   line-height: 1px;
-  margin-top: 1em;
-  padding-bottom: 1em;
   border: none;
   background: #333;
 }
