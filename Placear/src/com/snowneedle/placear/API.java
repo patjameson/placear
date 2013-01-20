@@ -64,52 +64,50 @@ public class API {
 		@Override
 		public void run() {
 			while (_location == null) {
+
+				System.out.println("waiting");
 				try {
-					Thread.currentThread().sleep(10000);
+					Thread.currentThread().sleep(1000);
+
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 			String queryString = "json?key=" + _token + "&location=" + _location.getLatitude() +
-					"," + _location.getLongitude() + "&radius=300&sensor=true";
+					"," + _location.getLongitude() + "&rankby=distance&sensor=true&types=cafe%7Cchurch%7Ccity_hall%7Cclothing_store%7Cconvenience_store%7Cestablishment%7Cstore%7Chealth%7Clibrary%7Cschool%7Clodging%7Cuniversity%7Cmuseum%7Cnight_club%7Cpharmacy%7Cplace_of_worship%7Crestaurant%7Cshopping_mall";
 			
 			HttpGet request = new HttpGet(_googleRoot.resolve(queryString));
+			System.out.println(_googleRoot.resolve(queryString));
 			HttpResponse response;
 			String responseBody = "";
 			JSONObject json = null;
 			while(true) {
+				
+				System.out.println("CALLING GOOGLE");
 				try {
-					Thread.currentThread().sleep(10000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				if (_locationsCache == null) {
-					System.out.println("CALLING GOOGLE");
-					try {
-						response = _googleClient.execute(request);
-						System.out.println(_googleRoot.resolve(queryString));
-						InputStream stream = response.getEntity().getContent();
-						BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8);
-						StringBuilder builder = new StringBuilder();
-						String line = null;
-						while ((line = reader.readLine()) != null)
-						{
-						    builder.append(line + "\n");
-						}
-						responseBody = builder.toString();
-						System.out.println(responseBody);
-						json = new JSONObject(responseBody);
-						_locationsCache = json;
-					} catch (JSONException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
+					response = _googleClient.execute(request);
+					System.out.println(_googleRoot.resolve(queryString));
+					InputStream stream = response.getEntity().getContent();
+					BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"), 8);
+					StringBuilder builder = new StringBuilder();
+					String line = null;
+					while ((line = reader.readLine()) != null)
+					{
+					    builder.append(line + "\n");
 					}
+					responseBody = builder.toString();
+					System.out.println(responseBody);
+					json = new JSONObject(responseBody);
+					_locationsCache = json;
+				} catch (JSONException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 				setChanged();
 				notifyObservers(JSONToPlaces(_locationsCache));
 				try {
-					Thread.currentThread().sleep(50000);
+					Thread.currentThread().sleep(60000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

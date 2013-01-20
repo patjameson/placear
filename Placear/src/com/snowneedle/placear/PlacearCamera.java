@@ -21,16 +21,17 @@ import android.widget.TextView;
 public class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback {
 	private SurfaceHolder mHolder;
 	private Camera camera;
-	private Paint paint;;
-	private Paint small;;
+	private Paint paint;
+	private Paint small;
 	private PlacearLocationManager plm;
 
 
 	PlacearCamera(Placear context, PlacearLocationManager _plm) {
-		super(context);
-		this.setWillNotDraw(false);
 		
+		super(context);
+		this.setWillNotDraw(false);		
 		paint = new Paint();
+		small = new Paint();
 		
 		plm = _plm;
 
@@ -40,8 +41,8 @@ public class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback
 	}
 	
 	@Override 
-    public void onDraw(Canvas canvas) {
-
+    public void onDraw(Canvas canvas) {		
+		
 		paint.setColor(Color.WHITE);
 
 		paint.setStrokeWidth(3);
@@ -62,26 +63,27 @@ public class PlacearCamera extends SurfaceView implements SurfaceHolder.Callback
 				float accu = cur_loc.getAccuracy();
 				
 //				DecimalFormat twoD = new DecimalFormat("#.##");
-//		      double lat = Double.valueOf(twoD.format(temp_lat));
-//		      double longi = Double.valueOf(twoD.format(temp_long));      
+//		      	double lat = Double.valueOf(twoD.format(temp_lat));
+//		      	double longi = Double.valueOf(twoD.format(temp_long));      
 		        String lats = Double.toString(temp_lat);
 		        String longs = Double.toString(temp_long);
 		        
 		        small.setTextSize(40);
 		        small.setColor(Color.WHITE);
-		        canvas.drawText("Bearing: " + plm.getAzimuth(), 100, 100, small);
+		        canvas.drawText("Bearing: " + plm.getAzimuth(), 300, 500, small);
 		        canvas.drawText("Lat: "+ lats, 300, 350, small);
 		        canvas.drawText("Long: " + longs, 300, 400, small);
 		        canvas.drawText("Accu: "+ accu, 300, 450, small);
-		        canvas.drawText("bearto: " + plm.getCurrentLocation().bearingTo(loc.getLocation()), 100, 300, paint);
+		        canvas.drawText("bearto: " + plm.getCurrentLocation().bearingTo(loc.getLocation()), 300, 550, small);		        
 		        
-		        TextView coords = new (TextView) 
+//		        TextView textView = (TextView)(findViewById(R.id.bot_bar));		        
+//		        textView.setText("New text");		     
 		        
 		        float direction = plm.getAzimuth();
 				
 				if (direction > 180)
 					direction = -(360 - direction);
-				canvas.drawText("bearlive: " + Math.abs(plm.getCurrentLocation().bearingTo(loc.getLocation())-direction), 100, 350, small);
+					canvas.drawText("bearlive: " + Math.abs(plm.getCurrentLocation().bearingTo(loc.getLocation())-direction), 300, 600, small);
 				
 			}
 		}	

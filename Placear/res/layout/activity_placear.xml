@@ -3,7 +3,8 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Placear" >   
+    tools:context=".Placear"
+    android:keepScreenOn = "true" >   
 
 		
 	<FrameLayout android:id="@+id/preview"
@@ -18,9 +19,9 @@
 	    android:layout_height="30dp"
 	    android:paddingTop="4dp"
 	    android:paddingLeft="10dp"
+	    android:text=""
 	    android:layout_alignParentBottom="true"
 	    android:layout_alignParentLeft="true"
-	    android:text="@string/lat_long"
 	    android:background="@color/black"	    
 	    android:textAppearance="?android:attr/textAppearanceMedium" />
 

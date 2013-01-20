@@ -5,24 +5,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import com.snowneedle.placear.R;
-import com.snowneedle.placear.location.PlacearLocationManager;
-import java.text.DecimalFormat;
-
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
-import android.os.Bundle;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.SensorManager;
+import android.location.Location;
 import android.location.LocationManager;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import com.snowneedle.placear.location.PlacearLocationManager;
 
@@ -33,6 +30,7 @@ public class Placear extends Activity {
 	PlacearCamera preview;
 	PlacearLocationManager PLM;
 
+
 	
 	public static final boolean HOLD_TOGGLE = true;
 	
@@ -42,24 +40,24 @@ public class Placear extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-			//Build Top Navigation Bar
-		  	final ActionBar bar = getActionBar();
+		//Build Top Navigation Bar
+	  	final ActionBar bar = getActionBar();
 		    bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		    ActionBar.Tab tabA = bar.newTab().setText("Camera");
+	    ActionBar.Tab tabA = bar.newTab().setText("Camera");
 		    ActionBar.Tab tabB = bar.newTab().setText("About");
 		   // ActionBar.Tab tabC = bar.newTab().findItem(R.id.menu_search);
 
-		    Fragment fragmentA = new AFragment();
-		    Fragment fragmentB = new BFragment();
-		   // Fragment fragmentC = new CFragment();	
+	    Fragment fragmentA = new AFragment();
+	    Fragment fragmentB = new BFragment();
+	   // Fragment fragmentC = new CFragment();	
 
 		    tabA.setTabListener(new MyTabsListener(fragmentA));
 		    tabB.setTabListener(new MyTabsListener(fragmentB));
 		  //  tabC.setTabListener(new MyTabsListener(fragmentC));
 
 		    bar.addTab(tabA);
-		    bar.addTab(tabB);
-		    //bar.addTab(tabC);			
+	    bar.addTab(tabB);
+	    //bar.addTab(tabC);			
 		
 		setContentView(R.layout.activity_placear);
 		sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
@@ -70,8 +68,11 @@ public class Placear extends Activity {
 		preview = new PlacearCamera(this, PLM);
 		FrameLayout f = ((FrameLayout) findViewById(R.id.preview));
 
-		f.addView(preview);			
-		 
+		f.addView(preview);		
+		
+		final TextView text = (TextView) findViewById(R.id.layout); 
+        text.setText("Hello");
+
 	 preview.setOnLongClickListener(new View.OnLongClickListener() {
 			 
 		public boolean onLongClick(View v){
@@ -90,10 +91,10 @@ public class Placear extends Activity {
 			if (HOLD_TOGGLE) {
 				bar.hide();
 			}
-			// TODO Auto-generated method stub
-			
+			// TODO Auto-generated method stub			
 		}
 	});
+
 	}
 	
 	private String getGoogleAccessToken() {
