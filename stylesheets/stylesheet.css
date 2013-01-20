@@ -371,6 +371,12 @@ h1 {
 
 #main-content h3{
 	font-family: 'Oswald', sans-serif;
+	letter-spacing:1.2em;
+}
+
+h2 {
+	font-family: 'Droid Sans', sans-serif;
+	
 }
 
 .clearfix {display: inline-block;}
