@@ -365,6 +365,10 @@ footer a:hover {
   height: 0;
 }
 
+h1,h3 {
+	font-family: 'Oswald', sans-serif;
+}
+
 .clearfix {display: inline-block;}
 * html .clearfix {height: 1%;}
 .clearfix {display: block;}
