@@ -1,20 +1,19 @@
 package com.snowneedle.placear.location;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Random;
 
-import com.snowneedle.placear.API;
-import com.snowneedle.placear.API.PlaceWorker;
-import com.snowneedle.placear.Place;
-
-import android.hardware.GeomagneticField;
 import android.hardware.SensorEventListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.snowneedle.placear.API;
+import com.snowneedle.placear.API.PlaceWorker;
+import com.snowneedle.placear.Place;
 
 public class PlacearLocationListener implements LocationListener, Observer {
 		
@@ -84,7 +83,13 @@ public class PlacearLocationListener implements LocationListener, Observer {
 		
 		@Override
 		public void update(Observable observable, Object data) {
-			places = (ArrayList<Place>)data;
+			if(data instanceof ArrayList) {
+				places = (ArrayList<Place>)data;
+			} else if(data instanceof HashMap) {
+				
+			} else {
+				Log.e("API", "What the fuck?!");
+			}
 		}
 		
 

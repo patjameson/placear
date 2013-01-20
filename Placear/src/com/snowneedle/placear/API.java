@@ -20,24 +20,19 @@ import org.json.JSONObject;
 
 import android.location.Location;
 import android.net.http.AndroidHttpClient;
+import android.os.AsyncTask;
 import android.util.Log;
 
 public class API {
 	
-	private String _googleToken;
-	private String _facebookToken;
-	
-	private AndroidHttpClient _facebookClient;
+	private String _googleToken;	
 	private AndroidHttpClient _googleClient;
-	
-	private final String _googleRoot = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
-	private final String _facebookGraphRoot = "https://graph.facebook.com/app";
+	private final String _mapRoot = "https://maps.googleapis.com/maps/api/place/nearbysearch/json";
+	private final String _mapDetailRoot = "https://maps.googleapis.com/maps/api/place/details/json";
 	
 	public API(String googleToken, String facebookToken){
 		_googleToken = googleToken;
-		_facebookToken = facebookToken;
 		_googleClient = AndroidHttpClient.newInstance("PlaceAR");
-		_facebookClient = AndroidHttpClient.newInstance("PlaceAR");
 	}
 	
 	private URI createQueryString(String baseUrl, HashMap<String, String> params) {
@@ -90,7 +85,72 @@ public class API {
 		return json;
 	}
 	
+	private ArrayList<Place> JSONToPlaces(JSONObject object) {
+		ArrayList<Place> places = new ArrayList<Place>();
+		try {
+			JSONArray results = (JSONArray) object.get("results");
+			for(int i=0; i<results.length(); i++){
+				JSONObject placeData = (JSONObject)results.get(i);
+				Place p = new Place(placeData);
+				places.add(p);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return places;
+	}
+	
+	public class PlaceWorker extends Observable implements Runnable {
+		
+		private Location _location;
+		
+		public PlaceWorker(Location loc) {
+			_location = loc;
+		}
+		
+		@Override
+		public void run() {
+			URI query = createQueryString(_mapRoot, new HashMap<String, String>(){{
+				put("key", _googleToken);
+				put("location", _location.getLatitude() + "," + _location.getLongitude());
+				put("radius", "300");
+				put("sensor", "true");
+			}});
+			HttpGet request = new HttpGet(query);
+			HttpResponse response;
+			JSONObject json = null;
+			ArrayList<Place> places = new ArrayList<Place>();
+			while(true) {
+				response = _googleClient.execute(request);
+				json = createJSONFromResponse(response);
+				places = JSONToPlaces(json);
+				new AsyncTask<Place, Void, PlaceDetail>() {
+					@Override
+					protected PlaceDetail doInBackground(Place... arg0) {
+						URI detailQuery;
+						HttpGet req;
+						HttpResponse resp;
+						JSONObject j = null;
+						for(Place p: arg0) {
+							detailQuery = createQueryString(_mapDetailRoot, new HashMap<String, String>() {{
+								put("key", _googleToken);
+								put("reference", p.getReference());
+								put("sensor", "true");
+							}});
+							req = new HttpGet(detailQuery);
+							resp = _googleClient.execute(req);
+							j = createJSONFromResponse(resp);
+							p.setDetail(new PlaceDetail(j.getJSONObject("result")));
+						}
+					}
+				}.execute((Place[]) places.toArray());
+			}
+		}
+	}
+	
 	private abstract class APIWorker extends Observable implements Runnable {
+		
+		protected boolean infinite = true;
 		
 		abstract AndroidHttpClient getClient();
 		abstract URI getQuery();
@@ -104,7 +164,7 @@ public class API {
 			HttpResponse response;
 			JSONObject json = null;
 			Log.v("API", "Starting thread.");
-			while(true) {
+			do {
 				try {
 					Log.v("API", "Executing the req.");
 					response = getClient().execute(request);
@@ -121,7 +181,7 @@ public class API {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-			}
+			} while(infinite);
 			
 		}
 		
@@ -134,19 +194,7 @@ public class API {
 			_location = location;
 		}
 		
-		private ArrayList<Place> JSONToPlaces(JSONObject object) {
-			ArrayList<Place> places = new ArrayList<Place>();
-			try {
-				JSONArray results = (JSONArray) object.get("results");
-				for(int i=0; i<results.length(); i++){
-					JSONObject placeData = (JSONObject)results.get(i);
-					places.add(new Place(placeData));
-				}
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-			return places;
-		}
+		
 
 		@Override
 		JSONObject processResponse(HttpResponse r) {
@@ -160,12 +208,7 @@ public class API {
 
 		@Override
 		URI getQuery() {
-			return createQueryString(_googleRoot, new HashMap<String, String>(){{
-				put("key", _googleToken);
-				put("location", _location.getLatitude() + "," + _location.getLongitude());
-				put("radius", "300");
-				put("sensor", "true");
-			}});
+			return null;
 		}
 
 		@Override
@@ -174,29 +217,44 @@ public class API {
 		}
 	}
 	
-	public class FBEventWorker extends APIWorker {
+	public class PlaceDetailWorker extends APIWorker {
+		
+		private String _reference;
+		
+		public PlaceDetailWorker(String reference) {
+			this.infinite = false;
+			_reference = reference;
+		}
 
 		@Override
 		AndroidHttpClient getClient() {
-			return _facebookClient;
+			return _googleClient;
 		}
 
 		@Override
 		URI getQuery() {
-			return createQueryString(_facebookGraphRoot, new HashMap<String, String>(){{
-				put("access_token", _facebookToken);
-			}});
+			return 
 		}
+			
 
 		@Override
 		JSONObject processResponse(HttpResponse r) {
+			AsyncTask<Place>
 			return createJSONFromResponse(r);
 		}
 		
+		private PlaceDetail JSONToPlaceDetail(JSONObject j) {
+			try {
+				return new PlaceDetail(j.getJSONObject("result"));
+			} catch (JSONException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
 		@Override
 		Object processJSON(JSONObject j) {
-			// TODO Auto-generated method stub
-			return null;
+			return JSONToPlaceDetail(j);
 		}
 		
 	}
@@ -205,4 +263,5 @@ public class API {
 		Log.v("API", "Starting new placeWorker.");
 		return new PlaceWorker(location);
 	}
+	
 }
