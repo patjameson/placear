@@ -4,66 +4,109 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.snowneedle.placear.API;
 import com.snowneedle.placear.Place;
-import com.snowneedle.placear.Placear;
-import com.snowneedle.placear.PlacearCamera;
+import com.snowneedle.placear.API.PlaceWorker;
 
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 
-public class PlacearLocationManager implements Observer {
+public class PlacearLocationManager implements SensorEventListener, LocationListener, Observer {
+	private float azimuth = -1;
 	
-	private LocationManager locationManager;
-	public PlacearLocationListener locationListener;
 	private Location lastKnownLocation;
-	private final int updateMs = 0;
-	private final int updateDist = 0;
+	private LocationManager locationManager;
+	private ArrayList<Place> places;
+	private API api;
+	ArrayList<Location> locations = new ArrayList<Location>();
 	
-	private SensorManager sensorManager;
-	private Sensor sensor;
-	private PlacearSensorEventListener sensorListener;
-	
-	public PlacearLocationManager(LocationManager locationManager, SensorManager sensorManager, 
-			String googleAccessToken, Placear placear) {
+	public PlacearLocationManager(LocationManager _locationManager, SensorManager sensorManager, String googleAccessToken) {
+		locationManager = _locationManager;
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 		
-		sensorListener = new PlacearSensorEventListener(sensorManager);
-		locationListener = new PlacearLocationListener(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER),
-				sensorListener, googleAccessToken, placear);		
-		this.locationManager = locationManager;
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
-				updateMs, updateDist, locationListener);
+		Sensor compass = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+		sensorManager.registerListener(this, compass, SensorManager.SENSOR_DELAY_NORMAL);
 		
-
+		places = new ArrayList<Place>();
+		api = new API(googleAccessToken);
+		
+		PlaceWorker worker = api.placeWorkerForLocation(this, locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+		new Thread(worker).start();
+		worker.addObserver(this);
 	}
 	
-	public Location getLastKnownLocation() {
-		return locationListener.getLastKnownLocation();
+	/******BEARING******/
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		azimuth = event.values[0];
 	}
 	
-	public double getLastLong() {
-		return locationListener.getLastLong();
+	public float getAzimuth() {
+		return azimuth;
 	}
 	
-	public double getLastLat() {
-		return locationListener.getLastLat();
-	}
-	
+	/******GET CLOSEST LOCATION******/
 	public Place getClosestLocation() {
-		return locationListener.getClosestLocation();
+		System.out.println(places.size());
+		if(places.size() == 0) return null;
+		
+		Place closestLocation = null;
+		
+		Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		System.out.println(lastKnownLocation.getAccuracy() + " " + azimuth + " " + lastKnownLocation.getLatitude());
+		
+		if (azimuth != -1 && lastKnownLocation != null) {
+			float direction = azimuth;
+			
+			if (direction > 180)
+				direction = -(360 - direction);
+			
+			double closestDistance = -1;
+			
+			for(Place p: places) {
+				float bearing = lastKnownLocation.bearingTo(p.getLocation());
+				if (Math.abs(bearing-direction) < 30) {
+					double curDistance = ((p.getLocation().getLatitude()-lastKnownLocation.getLatitude()) * 
+							(p.getLocation().getLatitude()-lastKnownLocation.getLatitude()) +
+							(p.getLocation().getLongitude()-lastKnownLocation.getLongitude()) * 
+							(p.getLocation().getLongitude()-lastKnownLocation.getLongitude()));
+					if (curDistance < closestDistance || closestDistance == -1) {
+						closestDistance = curDistance;
+						closestLocation = p;
+					}
+				}
+			}
+		}
+		
+		if (closestLocation != null)
+			return closestLocation;
+		else
+			return null;
 	}
-
+	
 	@Override
 	public void update(Observable observable, Object data) {
-		ArrayList<Place> places = (ArrayList<Place>)data;
+		places = (ArrayList<Place>)data;
 	}
 	
+	public Location getCurrentLocation() {
+		return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+	}
 	
-	
-	
-	
-	
-
-
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+	@Override
+	public void onLocationChanged(Location location) {}
+	@Override
+	public void onProviderDisabled(String provider) {}
+	@Override
+	public void onProviderEnabled(String provider) {}
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {}
 }

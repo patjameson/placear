@@ -63,9 +63,15 @@ public class API {
 		
 		@Override
 		public void run() {
+			while (_location == null) {
+				try {
+					Thread.currentThread().sleep(10000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 			String queryString = "json?key=" + _token + "&location=" + _location.getLatitude() +
 					"," + _location.getLongitude() + "&radius=300&sensor=true";
-			
 			
 			HttpGet request = new HttpGet(_googleRoot.resolve(queryString));
 			HttpResponse response;

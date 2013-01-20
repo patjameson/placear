@@ -10,5 +10,9 @@
     <string name="cancel">Cancel</string>
     <string name="signin">Sign-In</string>
     <string name="menu_search">Search for Events</string>
+    <string name="about">Placear app is built off of the words Place and AR(Augmented Reality). Our goal is to build an augmented reality 
+        for any android user in their own town/city. \n\nWe use your phone as an information source where you can literally just point your phone and get information. You can view the area around you 
+        by using your camera and pointing at the desired location. We then display information about that building for you to view. You can 
+        even interact with that information and see more. \n\nPress and hold the screen to view the top bar and tap to hide.</string>
 
 </resources>

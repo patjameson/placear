@@ -4,9 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+
+import com.snowneedle.placear.R;
+import com.snowneedle.placear.location.PlacearLocationManager;
+import java.text.DecimalFormat;
+
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
+import android.os.Bundle;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
@@ -56,13 +62,12 @@ public class Placear extends Activity {
 		    //bar.addTab(tabC);			
 		
 		setContentView(R.layout.activity_placear);
-		
 		sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
 		
 		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
-		PLM = new PlacearLocationManager(lm, sensorManager, getGoogleAccessToken(), this);
+		PLM = new PlacearLocationManager(lm, sensorManager, getGoogleAccessToken());
 		
-		preview = new PlacearCamera(this, PLM.locationListener);
+		preview = new PlacearCamera(this, PLM);
 		FrameLayout f = ((FrameLayout) findViewById(R.id.preview));
 
 		f.addView(preview);			
@@ -100,8 +105,7 @@ public class Placear extends Activity {
 			token = reader.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}		
-		Log.w("access token", token);
+		}	
 		
 		return token;
 	}	
@@ -128,6 +132,7 @@ class MyTabsListener implements ActionBar.TabListener {
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 		ft.remove(fragment);
 	}
+
 }
 
 
