@@ -3,11 +3,9 @@ package com.snowneedle.placear.location;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
-
 import com.snowneedle.placear.API;
 import com.snowneedle.placear.Place;
 import com.snowneedle.placear.API.PlaceWorker;
-
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -16,6 +14,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
+import com.snowneedle.placear.Place;
+
 
 public class PlacearLocationManager implements SensorEventListener, LocationListener, Observer {
 	private float azimuth = -1;
@@ -37,7 +38,7 @@ public class PlacearLocationManager implements SensorEventListener, LocationList
 		places = new ArrayList<Place>();
 		api = new API(googleAccessToken);
 		
-		PlaceWorker worker = api.placeWorkerForLocation(this, locationManager.getLastKnownLocation(provider));
+		PlaceWorker worker = api.placeWorkerForLocation(locationManager.getLastKnownLocation(provider));
 		new Thread(worker).start();
 		worker.addObserver(this);
 	}
@@ -47,6 +48,7 @@ public class PlacearLocationManager implements SensorEventListener, LocationList
 	public void onSensorChanged(SensorEvent event) {
 		azimuth = event.values[0];
 	}
+	public ArrayList<Place> getPlaces(){ return places; }
 	
 	public float getAzimuth() {
 		return azimuth;
@@ -95,19 +97,35 @@ public class PlacearLocationManager implements SensorEventListener, LocationList
 	public void update(Observable observable, Object data) {
 		places = (ArrayList<Place>)data;
 	}
-	
-	public Location getCurrentLocation() {
-		return locationManager.getLastKnownLocation(provider);
+
+	@Override
+	public void onLocationChanged(Location arg0) {
+		// TODO Auto-generated method stub
+		
 	}
-	
+
 	@Override
-	public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+	public void onProviderDisabled(String provider) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	@Override
-	public void onLocationChanged(Location location) {}
+	public void onProviderEnabled(String provider) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	@Override
-	public void onProviderDisabled(String provider) {}
+	public void onStatusChanged(String provider, int status, Bundle extras) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	@Override
-	public void onProviderEnabled(String provider) {}
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {}
+	public void onAccuracyChanged(Sensor arg0, int arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

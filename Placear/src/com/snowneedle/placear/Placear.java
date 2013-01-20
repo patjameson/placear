@@ -4,20 +4,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.graphics.Color;
 import android.hardware.SensorManager;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -27,19 +23,20 @@ public class Placear extends Activity {
 
 
 	SensorManager sensorManager;
+
 	PlacearCamera preview;
 	PlacearLocationManager PLM;
-
-
 	
 	public static final boolean HOLD_TOGGLE = true;
 	
 	public static final int AUTO_HIDE_TIME = 5000; //in ms	
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+
 		//Build Top Navigation Bar
 	  	final ActionBar bar = getActionBar();
 		    bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -60,11 +57,14 @@ public class Placear extends Activity {
 	    //bar.addTab(tabC);			
 		
 		setContentView(R.layout.activity_placear);
+
+
 		sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
 		
 		LocationManager lm = (LocationManager)this.getSystemService(Context.LOCATION_SERVICE);
 		PLM = new PlacearLocationManager(lm, sensorManager, getGoogleAccessToken());
 		
+
 		preview = new PlacearCamera(this, PLM);
 		FrameLayout f = ((FrameLayout) findViewById(R.id.preview));
 
@@ -93,9 +93,13 @@ public class Placear extends Activity {
 			}
 			// TODO Auto-generated method stub			
 		}
-	});
+	});	
+		
 
 	}
+	
+	public PlacearLocationManager getLocationManager(){ return PLM; }
+	public SensorManager getSensorManager(){ return sensorManager; }
 	
 	private String getGoogleAccessToken() {
 		String token = "";
@@ -133,7 +137,6 @@ class MyTabsListener implements ActionBar.TabListener {
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 		ft.remove(fragment);
 	}
-
 }
 
 
