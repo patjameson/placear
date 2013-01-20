@@ -39,24 +39,24 @@ public class Placear extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-			//Build Top Navigation Bar
-		  	final ActionBar bar = getActionBar();
-		    bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		    ActionBar.Tab tabA = bar.newTab().setText("Camera");
-		    ActionBar.Tab tabB = bar.newTab().setText("About");
+//			//Build Top Navigation Bar
+//		  	final ActionBar bar = getActionBar();
+////		    bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+//		    ActionBar.Tab tabA = bar.newTab().setText("Camera");
+//		    ActionBar.Tab tabB = bar.newTab().setText("About");
 		   // ActionBar.Tab tabC = bar.newTab().findItem(R.id.menu_search);
 
-		    Fragment fragmentA = new AFragment();
-		    Fragment fragmentB = new BFragment();
-		   // Fragment fragmentC = new CFragment();	
-
-		    tabA.setTabListener(new MyTabsListener(fragmentA));
-		    tabB.setTabListener(new MyTabsListener(fragmentB));
-		  //  tabC.setTabListener(new MyTabsListener(fragmentC));
-
-		    bar.addTab(tabA);
-		    bar.addTab(tabB);
-		    //bar.addTab(tabC);			
+//		    Fragment fragmentA = new AFragment();
+//		    Fragment fragmentB = new BFragment();
+//		   // Fragment fragmentC = new CFragment();	
+//
+//		    tabA.setTabListener(new MyTabsListener(fragmentA));
+//		    tabB.setTabListener(new MyTabsListener(fragmentB));
+//		  //  tabC.setTabListener(new MyTabsListener(fragmentC));
+//
+//		    bar.addTab(tabA);
+//		    bar.addTab(tabB);
+//		    //bar.addTab(tabC);			
 		
 		setContentView(R.layout.activity_placear);
 		sensorManager = (SensorManager)this.getSystemService(Context.SENSOR_SERVICE);
@@ -69,27 +69,27 @@ public class Placear extends Activity {
 
 		f.addView(preview);			
 		 
-	 preview.setOnLongClickListener(new View.OnLongClickListener() {
-			 
-		public boolean onLongClick(View v){
-				if (HOLD_TOGGLE) {    
-			
-					bar.show();
-		}	
-			return true;			
-		}			
-		 });
-	 preview.setOnClickListener(new View.OnClickListener() {		 
-		
-		@Override
-		public void onClick(View v) {
-			if (HOLD_TOGGLE) {
-				bar.hide();
-			}
-			// TODO Auto-generated method stub
-			
-		}
-	});
+//	 preview.setOnLongClickListener(new View.OnLongClickListener() {
+//			 
+//		public boolean onLongClick(View v){
+//				if (HOLD_TOGGLE) {    
+//			
+//					bar.show();
+//		}	
+//			return true;			
+//		}			
+//		 });
+//	 preview.setOnClickListener(new View.OnClickListener() {		 
+//		
+//		@Override
+//		public void onClick(View v) {
+//			if (HOLD_TOGGLE) {
+//				bar.hide();
+//			}
+//			// TODO Auto-generated method stub
+//			
+//		}
+//	});
 	}
 	
 	private String getGoogleAccessToken() {

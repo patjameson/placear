@@ -25,10 +25,11 @@ public class PlacearLocationManager implements SensorEventListener, LocationList
 	private ArrayList<Place> places;
 	private API api;
 	ArrayList<Location> locations = new ArrayList<Location>();
+	String provider = LocationManager.NETWORK_PROVIDER;
 	
 	public PlacearLocationManager(LocationManager _locationManager, SensorManager sensorManager, String googleAccessToken) {
 		locationManager = _locationManager;
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+		locationManager.requestLocationUpdates(provider, 0, 0, this);
 		
 		Sensor compass = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
 		sensorManager.registerListener(this, compass, SensorManager.SENSOR_DELAY_NORMAL);
@@ -36,7 +37,7 @@ public class PlacearLocationManager implements SensorEventListener, LocationList
 		places = new ArrayList<Place>();
 		api = new API(googleAccessToken);
 		
-		PlaceWorker worker = api.placeWorkerForLocation(this, locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER));
+		PlaceWorker worker = api.placeWorkerForLocation(this, locationManager.getLastKnownLocation(provider));
 		new Thread(worker).start();
 		worker.addObserver(this);
 	}
@@ -58,7 +59,7 @@ public class PlacearLocationManager implements SensorEventListener, LocationList
 		
 		Place closestLocation = null;
 		
-		Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		Location lastKnownLocation = locationManager.getLastKnownLocation(provider);
 		System.out.println(lastKnownLocation.getAccuracy() + " " + azimuth + " " + lastKnownLocation.getLatitude());
 		
 		if (azimuth != -1 && lastKnownLocation != null) {
@@ -96,7 +97,7 @@ public class PlacearLocationManager implements SensorEventListener, LocationList
 	}
 	
 	public Location getCurrentLocation() {
-		return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		return locationManager.getLastKnownLocation(provider);
 	}
 	
 	@Override
