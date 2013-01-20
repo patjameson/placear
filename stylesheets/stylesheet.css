@@ -365,7 +365,11 @@ footer a:hover {
   height: 0;
 }
 
-h1,h3 {
+h1 {
+	font-family: 'Oswald', sans-serif;
+}
+
+#main-content h3{
 	font-family: 'Oswald', sans-serif;
 }
 
