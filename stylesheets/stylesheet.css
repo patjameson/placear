@@ -203,7 +203,7 @@ hr {
   margin-top: 1em;
   padding-bottom: 1em;
   border: none;
-  background: transparent url('../images/hr.png') 0 0 no-repeat;
+  background: #333;
 }
 
 table {
